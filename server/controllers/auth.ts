@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { auth } from '../config/firebase';
+import { auth, db } from '../config/firebase';
 import { APIError } from '../middleware/error';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
