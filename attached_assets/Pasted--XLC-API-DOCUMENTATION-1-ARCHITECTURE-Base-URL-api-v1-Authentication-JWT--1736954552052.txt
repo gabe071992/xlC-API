@@ -1,0 +1,208 @@
+
+XLC API DOCUMENTATION
+
+1. ARCHITECTURE
+---------------
+Base URL: /api/v1
+Authentication: JWT Bearer Token + API Key options
+Response Format: JSON
+Error Handling: Consistent error objects
+Rate Limiting: Implemented per endpoint
+
+2. AUTHENTICATION ENDPOINTS
+--------------------------
+POST /auth/login
+- Email/password authentication
+- Returns: JWT token
+- Rate limit: 10 req/min
+
+POST /auth/refresh
+- Refresh expired JWT token
+- Requires: Valid refresh token
+- Returns: New JWT token
+
+POST /auth/logout
+- Invalidate current token
+- Requires: Valid JWT token
+
+3. USER MANAGEMENT
+-----------------
+POST /users
+- Create new user
+- Required fields: email, password
+- Optional: name, preferences
+
+GET /users/{userId}
+- Get user profile
+- Protected route
+
+PUT /users/{userId}
+- Update user profile
+- Protected route
+
+DELETE /users/{userId}
+- Delete user account
+- Requires admin rights
+
+4. WALLET OPERATIONS
+-------------------
+POST /wallets
+- Create new wallet
+- Returns: wallet address, public/private keys
+
+GET /wallets/{address}
+- Get wallet details
+- Returns: balance, transactions
+
+POST /wallets/{address}/transfer
+- Transfer funds
+- Required: destination, amount, gasLimit
+
+GET /wallets/{address}/transactions
+- List wallet transactions
+- Supports pagination
+
+5. STAKING OPERATIONS
+--------------------
+GET /staking/pools
+- List available staking pools
+- Returns: APY, min stake, lockup period
+
+POST /staking/stakes
+- Create new stake
+- Required: amount, poolId
+
+GET /staking/stakes/{stakeId}
+- Get stake details
+- Returns: rewards, status
+
+DELETE /staking/stakes/{stakeId}
+- Unstake funds
+- Validates lockup period
+
+6. LIQUIDITY OPERATIONS
+----------------------
+GET /liquidity/pools
+- List liquidity pools
+- Returns: pairs, TVL, APY
+
+POST /liquidity/positions
+- Add liquidity
+- Required: poolId, amount
+
+DELETE /liquidity/positions/{positionId}
+- Remove liquidity
+- Returns: received tokens
+
+7. BUSINESS & TEAM
+-----------------
+GET /business/{accountId}
+- Get business account details
+- Admin only
+
+POST /business/{accountId}/team
+- Add team member
+- Required: email, role
+
+GET /business/{accountId}/usage
+- Get usage metrics
+- Returns: API calls, resources
+
+8. MONITORING & ANALYTICS
+------------------------
+GET /monitoring/health
+- System health check
+- Returns: services status
+
+GET /analytics/usage
+- Get usage statistics
+- Supports date range filtering
+
+9. WEBHOOK MANAGEMENT
+--------------------
+POST /webhooks
+- Register webhook endpoint
+- Required: url, events[]
+
+GET /webhooks
+- List registered webhooks
+
+DELETE /webhooks/{webhookId}
+- Remove webhook registration
+
+10. API KEY MANAGEMENT
+---------------------
+POST /api-keys
+- Generate new API key
+- Returns: key, secret
+
+GET /api-keys
+- List active API keys
+
+DELETE /api-keys/{keyId}
+- Revoke API key
+
+11. ERROR HANDLING
+-----------------
+Standard Error Response:
+{
+  "error": string,
+  "code": string,
+  "details": object
+}
+
+Common Error Codes:
+- AUTH_001: Authentication failed
+- AUTH_002: Token expired
+- WALLET_001: Insufficient funds
+- STAKE_001: Minimum stake not met
+- API_001: Rate limit exceeded
+
+12. RATE LIMITS
+--------------
+- Authentication: 10 req/min
+- Wallet operations: 30 req/min
+- Transactions: 60 req/min
+- Staking: 20 req/min
+- Business: 100 req/min
+
+13. SECURITY
+-----------
+- TLS encryption required
+- JWT expiration: 1 hour
+- API key rotation recommended: 30 days
+- IP whitelisting available
+- CORS policy enforced
+
+14. IMPLEMENTATION SEQUENCE
+-------------------------
+Phase 1:
+1. Authentication system
+2. User management
+3. Basic wallet operations
+
+Phase 2:
+4. Transaction handling
+5. Staking functionality
+6. Liquidity pools
+
+Phase 3:
+7. Business accounts
+8. Team management
+9. Analytics
+
+Phase 4:
+10. Webhooks
+11. Advanced monitoring
+12. API key management
+
+15. TESTING REQUIREMENTS
+-----------------------
+- Unit tests for all controllers
+- Integration tests for flows
+- Mock Firebase responses
+- Rate limit testing
+- Authentication testing
+- Error handling verification
+
+END OF DOCUMENTATION
