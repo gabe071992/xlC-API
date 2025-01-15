@@ -1,5 +1,6 @@
 
 XLC API Implementation Plan
+do not change, edit, refactor, reformat, redcat, or delete any section of the code under any circumstance unless explicityly required. do not add any additional functionality that has not been explicitly requested. 
 
 CURRENT STATUS:
 - Firebase Authentication (Admin SDK) configured and functional
