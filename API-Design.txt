@@ -72,13 +72,62 @@ Notes:
 - Access token should be included in subsequent requests as Bearer token
 
 POST /auth/refresh
-- Refresh expired JWT token
-- Requires: Valid refresh token
-- Returns: New JWT token
+- Description: Refreshes expired JWT tokens
+- Rate limit: 10 requests per minute
+- Content-Type: application/json
+
+Request Body:
+{
+  "refreshToken": string   // Valid Firebase refresh token
+}
+
+Success Response (200 OK):
+{
+  "token": string,         // New JWT access token
+  "refreshToken": string,  // New JWT refresh token
+  "user": {
+    "uid": string,        // Firebase user ID
+    "email": string,      // User email address
+    "displayName": string // User display name (if set)
+  }
+}
+
+Error Responses:
+- 400 Bad Request:
+  {
+    "error": "Refresh token is required",
+    "code": "AUTH_006"
+  }
+
+- 401 Unauthorized:
+  {
+    "error": "Invalid refresh token",
+    "code": "AUTH_002"
+  }
 
 POST /auth/logout
-- Invalidate current token
-- Requires: Valid JWT token
+- Description: Invalidates user tokens and clears Firebase session
+- Rate limit: 10 requests per minute
+- Requires: Valid JWT token in Authorization header
+- Content-Type: application/json
+
+Success Response (200 OK):
+{
+  "message": "Successfully logged out"
+}
+
+Error Responses:
+- 400 Bad Request:
+  {
+    "error": "User ID is required",
+    "code": "AUTH_005"
+  }
+
+- 401 Unauthorized:
+  {
+    "error": "Invalid or expired token",
+    "code": "AUTH_003"
+  }
 
 3. USER MANAGEMENT
 -----------------
