@@ -28,11 +28,24 @@ export const login = async (req: Request, res: Response) => {
         throw new APIError('User not found', 404, 'AUTH_001');
       });
 
-    // Create a custom token for the user
+    // Create a custom token with expiration
     const token = await auth.createCustomToken(userRecord.uid);
+    
+    // Generate refresh token
+    const refreshToken = await auth.createCustomToken(userRecord.uid, {
+      expiresIn: '7d',
+      refreshToken: true
+    });
+
+    // Store refresh token in database
+    await db.ref(`userTokens/${userRecord.uid}/refreshToken`).set({
+      token: refreshToken,
+      createdAt: new Date().toISOString()
+    });
 
     res.json({ 
       token,
+      refreshToken,
       user: {
         uid: userRecord.uid,
         email: userRecord.email,
