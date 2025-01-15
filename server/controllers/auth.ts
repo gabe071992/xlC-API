@@ -3,6 +3,17 @@ import { auth } from '../config/firebase';
 import { APIError } from '../middleware/error';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
+export const verifyConnection = async (_req: Request, res: Response) => {
+  try {
+    // Test if we can access Firebase Admin SDK
+    await auth.listUsers(1);
+    res.json({ status: 'Firebase Admin SDK connected', timestamp: new Date().toISOString() });
+  } catch (error) {
+    console.error('Firebase connection error:', error);
+    throw new APIError('Firebase Admin SDK connection failed', 500, 'AUTH_007');
+  }
+};
+
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
