@@ -57,12 +57,26 @@ export const refreshToken = async (req: Request, res: Response) => {
     // Verify the token first
     const decodedToken = await auth.verifyIdToken(token);
 
+    // Check if token is close to expiry (within 5 minutes)
+    const tokenExp = decodedToken.exp * 1000; // Convert to milliseconds
+    const fiveMinutes = 5 * 60 * 1000;
+    if (Date.now() + fiveMinutes < tokenExp) {
+      throw new APIError('Token is still valid', 400, 'AUTH_008');
+    }
+
     // Create a new custom token
     const newToken = await auth.createCustomToken(decodedToken.uid);
 
-    res.json({ token: newToken });
+    res.json({ 
+      token: newToken,
+      user: {
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+      }
+    });
   } catch (error) {
     console.error('Token refresh error:', error);
+    if (error instanceof APIError) throw error;
     throw new APIError('Token refresh failed', 401, 'AUTH_002');
   }
 };
@@ -75,6 +89,7 @@ export const logout = async (req: Request, res: Response) => {
       throw new APIError('User ID is required', 400, 'AUTH_005');
     }
 
+    // Revoke all refresh tokens for the user
     await auth.revokeRefreshTokens(uid);
     res.json({ message: 'Successfully logged out' });
   } catch (error) {
