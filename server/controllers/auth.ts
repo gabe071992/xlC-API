@@ -61,27 +61,39 @@ export const login = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
-    const { token } = req.body;
+    const { refreshToken } = req.body;
 
-    if (!token) {
-      throw new APIError('Token is required', 400, 'AUTH_006');
+    if (!refreshToken) {
+      throw new APIError('Refresh token is required', 400, 'AUTH_006');
     }
 
-    // Verify the token first
-    const decodedToken = await auth.verifyIdToken(token);
+    // Verify refresh token
+    const decodedToken = await auth.verifyIdToken(refreshToken);
 
-    // Check if token is close to expiry (within 5 minutes)
-    const tokenExp = decodedToken.exp * 1000; // Convert to milliseconds
-    const fiveMinutes = 5 * 60 * 1000;
-    if (Date.now() + fiveMinutes < tokenExp) {
-      throw new APIError('Token is still valid', 400, 'AUTH_008');
+    // Check if refresh token exists in database
+    const tokenRef = await db.ref(`userTokens/${decodedToken.uid}/refreshToken`).get();
+    const storedToken = tokenRef.val();
+
+    if (!storedToken || storedToken.token !== refreshToken) {
+      throw new APIError('Invalid refresh token', 401, 'AUTH_002');
     }
 
-    // Create a new custom token
+    // Generate new tokens
     const newToken = await auth.createCustomToken(decodedToken.uid);
+    const newRefreshToken = await auth.createCustomToken(decodedToken.uid, {
+      expiresIn: '7d',
+      refreshToken: true
+    });
+
+    // Update refresh token in database
+    await db.ref(`userTokens/${decodedToken.uid}/refreshToken`).set({
+      token: newRefreshToken,
+      createdAt: new Date().toISOString()
+    });
 
     res.json({ 
       token: newToken,
+      refreshToken: newRefreshToken,
       user: {
         uid: decodedToken.uid,
         email: decodedToken.email,
@@ -96,14 +108,18 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const { uid } = req.body;
+    const { uid } = req.user;
 
     if (!uid) {
       throw new APIError('User ID is required', 400, 'AUTH_005');
     }
 
+    // Remove refresh token from database
+    await db.ref(`userTokens/${uid}/refreshToken`).remove();
+    
     // Revoke all refresh tokens for the user
     await auth.revokeRefreshTokens(uid);
+
     res.json({ message: 'Successfully logged out' });
   } catch (error) {
     console.error('Logout error:', error);
