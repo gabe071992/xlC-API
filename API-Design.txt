@@ -12,9 +12,64 @@ Rate Limiting: Implemented per endpoint
 2. AUTHENTICATION ENDPOINTS
 --------------------------
 POST /auth/login
-- Email/password authentication
-- Returns: JWT token
-- Rate limit: 10 req/min
+- Description: Authenticates user and returns JWT tokens for API access
+- Rate limit: 10 requests per minute
+- Content-Type: application/json
+
+Request Body:
+{
+  "email": string,     // Valid email address
+  "password": string   // User password (min 6 characters)
+}
+
+Success Response (200 OK):
+{
+  "token": string,         // JWT access token
+  "refreshToken": string,  // JWT refresh token
+  "user": {
+    "uid": string,        // Firebase user ID
+    "email": string,      // User email address
+    "displayName": string // User display name (if set)
+  }
+}
+
+Error Responses:
+- 400 Bad Request:
+  {
+    "error": "Email and password are required",
+    "code": "AUTH_004"
+  }
+
+- 401 Unauthorized:
+  {
+    "error": "Authentication failed",
+    "code": "AUTH_001"
+  }
+
+- 404 Not Found:
+  {
+    "error": "User not found",
+    "code": "AUTH_001"
+  }
+
+- 429 Too Many Requests:
+  {
+    "error": "Too many login attempts, please try again later",
+    "code": "API_001"
+  }
+
+Example Request:
+```bash
+curl -X POST http://your-api/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "userPassword123"}'
+```
+
+Notes:
+- The access token expires in 1 hour
+- The refresh token expires in 7 days
+- Both tokens should be stored securely by the client
+- Access token should be included in subsequent requests as Bearer token
 
 POST /auth/refresh
 - Refresh expired JWT token
