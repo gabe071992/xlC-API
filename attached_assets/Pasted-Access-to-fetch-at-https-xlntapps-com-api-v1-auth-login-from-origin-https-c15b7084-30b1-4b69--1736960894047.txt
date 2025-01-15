@@ -1,0 +1,59 @@
+Access to fetch at 'https://xlntapps.com/api/v1/auth/login' from origin 'https://c15b7084-30b1-4b69-a2ed-ae67dba9b250-00-3mds8mezeb2p4.janeway.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.Understand this errorAI
+authService.ts:60 
+        
+        
+       POST https://xlntapps.com/api/v1/auth/login net::ERR_FAILED
+window.fetch @ Network.js:219
+login @ authService.ts:60
+handleLogin @ useLogin.ts:14
+handleSubmit @ LoginForm.tsx:14
+callCallback2 @ chunk-QT63QQJV.js?v=5b1903f9:3674
+invokeGuardedCallbackDev @ chunk-QT63QQJV.js?v=5b1903f9:3699
+invokeGuardedCallback @ chunk-QT63QQJV.js?v=5b1903f9:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-QT63QQJV.js?v=5b1903f9:3736
+executeDispatch @ chunk-QT63QQJV.js?v=5b1903f9:7014
+processDispatchQueueItemsInOrder @ chunk-QT63QQJV.js?v=5b1903f9:7034
+processDispatchQueue @ chunk-QT63QQJV.js?v=5b1903f9:7043
+dispatchEventsForPlugins @ chunk-QT63QQJV.js?v=5b1903f9:7051
+(anonymous) @ chunk-QT63QQJV.js?v=5b1903f9:7174
+batchedUpdates$1 @ chunk-QT63QQJV.js?v=5b1903f9:18913
+batchedUpdates @ chunk-QT63QQJV.js?v=5b1903f9:3579
+dispatchEventForPluginEventSystem @ chunk-QT63QQJV.js?v=5b1903f9:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-QT63QQJV.js?v=5b1903f9:5478
+dispatchEvent @ chunk-QT63QQJV.js?v=5b1903f9:5472
+dispatchDiscreteEvent @ chunk-QT63QQJV.js?v=5b1903f9:5449Understand this errorAI
+Network.js:219 
+        
+        
+       
+        
+       Uncaught (in promise) TypeError: Failed to fetch
+    at window.fetch (Network.js:219:37)
+    at AuthService.login (authService.ts:60:30)
+    at handleLogin (useLogin.ts:14:49)
+    at handleSubmit (LoginForm.tsx:14:27)
+    at HTMLUnknownElement.callCallback2 (chunk-QT63QQJV.js?v=5b1903f9:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-QT63QQJV.js?v=5b1903f9:3699:24)
+    at invokeGuardedCallback (chunk-QT63QQJV.js?v=5b1903f9:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (chunk-QT63QQJV.js?v=5b1903f9:3736:33)
+    at executeDispatch (chunk-QT63QQJV.js?v=5b1903f9:7014:11)
+    at processDispatchQueueItemsInOrder (chunk-QT63QQJV.js?v=5b1903f9:7034:15)
+window.fetch @ Network.js:219
+login @ authService.ts:60
+handleLogin @ useLogin.ts:14
+handleSubmit @ LoginForm.tsx:14
+callCallback2 @ chunk-QT63QQJV.js?v=5b1903f9:3674
+invokeGuardedCallbackDev @ chunk-QT63QQJV.js?v=5b1903f9:3699
+invokeGuardedCallback @ chunk-QT63QQJV.js?v=5b1903f9:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-QT63QQJV.js?v=5b1903f9:3736
+executeDispatch @ chunk-QT63QQJV.js?v=5b1903f9:7014
+processDispatchQueueItemsInOrder @ chunk-QT63QQJV.js?v=5b1903f9:7034
+processDispatchQueue @ chunk-QT63QQJV.js?v=5b1903f9:7043
+dispatchEventsForPlugins @ chunk-QT63QQJV.js?v=5b1903f9:7051
+(anonymous) @ chunk-QT63QQJV.js?v=5b1903f9:7174
+batchedUpdates$1 @ chunk-QT63QQJV.js?v=5b1903f9:18913
+batchedUpdates @ chunk-QT63QQJV.js?v=5b1903f9:3579
+dispatchEventForPluginEventSystem @ chunk-QT63QQJV.js?v=5b1903f9:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-QT63QQJV.js?v=5b1903f9:5478
+dispatchEvent @ chunk-QT63QQJV.js?v=5b1903f9:5472
+dispatchDiscreteEvent @ chunk-QT63QQJV.js?v=5b1903f9:5449Understand this errorAI
