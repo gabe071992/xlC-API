@@ -1,6 +1,17 @@
+
 {
   "variant": "professional",
-  "primary": "hsl(222.2 47.4% 11.2%)",
+  "primary": "hsl(220, 60%, 20%)",
   "appearance": "light",
-  "radius": 0.5
+  "radius": 0.5,
+  "colors": {
+    "background": "hsl(220, 30%, 98%)",
+    "foreground": "hsl(220, 60%, 20%)",
+    "primary": "hsl(220, 60%, 20%)",
+    "sidebar": {
+      "background": "hsl(220, 60%, 20%)",
+      "foreground": "hsl(220, 30%, 98%)",
+      "border": "hsl(220, 30%, 25%)"
+    }
+  }
 }
