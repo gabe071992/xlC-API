@@ -1,7 +1,7 @@
 
 import { ErrorBoundary } from "react-error-boundary"
 import { Header } from "./Header"
-import { Sidebar } from "./Sidebar"
+import { Sidebar } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toaster"
 
 function ErrorFallback({ error }: { error: Error }) {
