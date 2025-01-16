@@ -49,17 +49,17 @@ import { config } from './lib/web3'
 function App() {
   return (
     <WagmiConfig config={config}>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <Router />
-          </main>
-        </div>
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1">
+              <Router />
+            </main>
+          </div>
+          <Toaster />
+        </AuthProvider>
+      </QueryClientProvider>
     </WagmiConfig>
   );
 }
