@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { useAuth } from "@/lib/contexts/auth";
@@ -7,6 +7,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/lib/contexts/auth";
 import { Header } from "@/components/layout/Header";
 import NotFound from "@/pages/not-found";
+import { MainLayout } from "@/components/layout/MainLayout"; // Added import for MainLayout
+
 
 function Router() {
   return (
@@ -14,12 +16,12 @@ function Router() {
       <Route path="/">
         {() => {
           const { user, loading } = useAuth();
-          const Dashboard = React.lazy(() => import("@/pages/dashboard"));
-          
+          const Dashboard = lazy(() => import("@/pages/dashboard"));
+
           if (loading) {
             return <div>Loading...</div>;
           }
-          
+
           if (!user) {
             return (
               <div className="flex min-h-screen items-center justify-center">
@@ -51,12 +53,9 @@ function App() {
     <WagmiConfig config={config}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1">
-              <Router />
-            </main>
-          </div>
+          <MainLayout> {/* Using MainLayout here */}
+            <Router />
+          </MainLayout>
           <Toaster />
         </AuthProvider>
       </QueryClientProvider>
@@ -65,3 +64,15 @@ function App() {
 }
 
 export default App;
+
+// Added components (replace with your actual implementations)
+export const MainLayout = ({ children }) => (
+  <div className="min-h-screen flex flex-col">
+    <Header />
+    <main className="flex-1">{children}</main>
+  </div>
+);
+
+// Placeholder for Sidebar component (needs implementation)
+
+export const Sidebar = () => <div>Sidebar (not implemented)</div>;
