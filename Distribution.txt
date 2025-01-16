@@ -1,0 +1,189 @@
+
+XLC Admin Distribution Forms Documentation
+========================================
+
+1. Offer Form
+------------
+Location: src/pages/Distribution/components/OfferForm.tsx
+
+Form Fields:
+- Title (required)
+- Type (standard/premium/exclusive)
+- Description (required)
+- Reward Amount (XLC) (required)
+- Duration (days) (required)
+- Max Participants (required)
+- Status (active/inactive)
+- Start Date (required)
+- End Date (required)
+- Requirements (array)
+
+Database Path: /offers/*
+Rules:
+{
+  "offers": {
+    ".read": true,
+    ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562')"
+  }
+}
+
+Data Structure:
+{
+  "offers": {
+    "$offerId": {
+      "title": string,
+      "type": "standard" | "premium" | "exclusive",
+      "description": string,
+      "rewardAmount": string,
+      "duration": string,
+      "maxParticipants": string,
+      "active": boolean,
+      "startDate": string,
+      "endDate": string,
+      "requirements": string[]
+    }
+  }
+}
+
+2. Staking Pool Form
+-------------------
+Location: src/pages/Distribution/components/StakingPoolForm.tsx
+
+Form Fields:
+- Pool Name (required)
+- APY (%) (required)
+- Minimum Stake Amount (XLC) (required)
+- Lock Period (days) (required)
+- Start Date (required)
+- End Date (required)
+- Status (active/inactive)
+
+Database Path: /staking/pools/*
+Rules:
+{
+  "staking": {
+    "pools": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    }
+  }
+}
+
+Data Structure:
+{
+  "staking": {
+    "pools": {
+      "$poolId": {
+        "id": string,
+        "name": string,
+        "totalStaked": number,
+        "apy": number,
+        "minStakeAmount": number,
+        "lockPeriod": number,
+        "active": boolean,
+        "startDate": string,
+        "endDate": string
+      }
+    }
+  }
+}
+
+3. Rewards Overview
+------------------
+Location: src/pages/Distribution/components/RewardsOverview.tsx
+
+Database Path: /staking/rewards/*
+Rules:
+{
+  "staking": {
+    "rewards": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    }
+  }
+}
+
+Data Structure:
+{
+  "staking": {
+    "rewards": {
+      "$rewardId": {
+        "userId": string,
+        "poolId": string,
+        "amount": number,
+        "timestamp": number,
+        "status": "pending" | "processed" | "failed",
+        "transactionHash": string
+      }
+    }
+  }
+}
+
+Associated Interfaces:
+--------------------
+
+1. Offer Interface:
+```typescript
+interface Offer {
+  title: string;
+  type: 'standard' | 'premium' | 'exclusive';
+  description: string;
+  rewardAmount: string;
+  duration: string;
+  maxParticipants: string;
+  active: boolean;
+  startDate: string;
+  endDate: string;
+  requirements: string[];
+}
+```
+
+2. Staking Pool Interface:
+```typescript
+interface StakingPool {
+  id: string;
+  name: string;
+  totalStaked: number;
+  apy: number;
+  minStakeAmount: number;
+  lockPeriod: number;
+  active: boolean;
+  startDate: string;
+  endDate: string;
+}
+```
+
+3. Reward Interface:
+```typescript
+interface Reward {
+  userId: string;
+  poolId: string;
+  amount: number;
+  timestamp: number;
+  status: 'pending' | 'processed' | 'failed';
+  transactionHash: string;
+}
+```
+
+Form Validation Rules:
+--------------------
+
+1. Offer Form:
+- Title: Required, string
+- Type: Required, must be one of: standard, premium, exclusive
+- Reward Amount: Required, numeric, > 0
+- Duration: Required, numeric, > 0
+- Max Participants: Required, numeric, > 0
+- Dates: Required, valid date format, end date > start date
+
+2. Staking Pool Form:
+- Name: Required, string
+- APY: Required, numeric, >= 0
+- Min Stake Amount: Required, numeric, > 0
+- Lock Period: Required, numeric, >= 0
+- Dates: Required, valid date format, end date > start date
+
+3. Rewards:
+- Amount: Required, numeric, > 0
+- Transaction Hash: Required when status is 'processed'
+- Status: Must be one of: pending, processed, failed

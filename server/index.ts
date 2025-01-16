@@ -14,7 +14,7 @@ app.set('trust proxy', 1);
 
 // API-specific middleware for /api routes
 app.use('/api', cors({
-  origin: 'https://xlnt-connect.com',
+  origin: 'https://xlnt-connect.com/login,',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
