@@ -13,12 +13,8 @@ app.use(express.urlencoded({ extended: false }));
 app.set('trust proxy', 1);
 
 // API-specific middleware for /api routes
-// Enable CORS for all routes
-app.use(cors());
-
-// Then add specific CORS for API routes
 app.use('/api', cors({
-  origin: ['https://xlnt-connect.com', 'https://xlntapps.com'],
+  origin: 'https://xlnt-connect.com',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
