@@ -1,3 +1,4 @@
+import React from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -9,7 +10,16 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={() => import("@/pages/dashboard").then(m => m.default)} />
+      <Route path="/">
+        {() => {
+          const Dashboard = React.lazy(() => import("@/pages/dashboard"));
+          return (
+            <React.Suspense fallback={<div>Loading...</div>}>
+              <Dashboard />
+            </React.Suspense>
+          );
+        }}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
