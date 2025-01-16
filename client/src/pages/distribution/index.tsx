@@ -1,4 +1,3 @@
-
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
@@ -8,11 +7,23 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+function handleOfferSubmit(event) {
+  event.preventDefault();
+  // Add your offer submission logic here
+  console.log("Offer submitted!");
+}
+
+function handlePoolSubmit(event) {
+  event.preventDefault();
+  // Add your pool submission logic here
+  console.log("Pool submitted!");
+}
+
 export default function Distribution() {
   return (
     <div className="container mx-auto p-4 md:p-6">
       <h1 className="text-2xl md:text-4xl font-bold mb-6">Distribution Management</h1>
-      
+
       <Tabs defaultValue="offers" className="space-y-4">
         <TabsList>
           <TabsTrigger value="offers">Offers</TabsTrigger>
@@ -23,7 +34,7 @@ export default function Distribution() {
         <TabsContent value="offers">
           <Card>
             <CardContent className="pt-6">
-              <form className="space-y-4">
+              <form onSubmit={handleOfferSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Title</Label>
                   <Input id="title" required />
@@ -78,7 +89,7 @@ export default function Distribution() {
         <TabsContent value="staking">
           <Card>
             <CardContent className="pt-6">
-              <form className="space-y-4">
+              <form onSubmit={handlePoolSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="poolName">Pool Name</Label>
                   <Input id="poolName" required />
