@@ -3,6 +3,9 @@ import { ErrorBoundary } from "react-error-boundary"
 import { Header } from "./Header"
 import { Sidebar } from "./Sidebar"
 import { Toaster } from "@/components/ui/toaster"
+import { Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -21,6 +24,16 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen flex-col">
         <Header />
         <div className="flex-1 flex">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden absolute left-4 top-4">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0">
+              <Sidebar className="w-64" />
+            </SheetContent>
+          </Sheet>
           <Sidebar className="w-64 hidden md:block" />
           <main className="flex-1 p-4 md:p-6">
             {children}
