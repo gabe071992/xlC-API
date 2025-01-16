@@ -65,14 +65,3 @@ function App() {
 
 export default App;
 
-// Added components (replace with your actual implementations)
-export const MainLayout = ({ children }) => (
-  <div className="min-h-screen flex flex-col">
-    <Header />
-    <main className="flex-1">{children}</main>
-  </div>
-);
-
-// Placeholder for Sidebar component (needs implementation)
-
-export const Sidebar = () => <div>Sidebar (not implemented)</div>;
