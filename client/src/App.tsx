@@ -24,7 +24,7 @@ function Router() {
             return (
               <div className="flex min-h-screen items-center justify-center">
                 <div className="text-center">
-                  <h1 className="text-2xl font-bold mb-4">XLC Bank Admin</h1>
+                  <h1 className="text-2xl font-bold mb-4">xlC</h1>
                   <p className="mb-4">Please log in to access the dashboard</p>
                 </div>
               </div>
