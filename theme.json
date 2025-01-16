@@ -1,17 +1,30 @@
 
 {
   "variant": "professional",
-  "primary": "hsl(220, 60%, 20%)",
+  "primary": "hsl(220, 65%, 55%)",
   "appearance": "light",
   "radius": 0.5,
   "colors": {
-    "background": "hsl(220, 30%, 98%)",
-    "foreground": "hsl(220, 60%, 20%)",
-    "primary": "hsl(220, 60%, 20%)",
+    "background": "hsl(0, 0%, 100%)",
+    "foreground": "hsl(222, 47%, 11%)",
+    "primary": "hsl(220, 65%, 55%)",
+    "secondary": "hsl(240, 5.9%, 10%)",
+    "muted": "hsl(240, 4.8%, 95.9%)",
+    "accent": "hsl(240, 3.8%, 46.1%)",
+    "border": "hsl(240, 5.9%, 90%)",
     "sidebar": {
-      "background": "hsl(220, 60%, 20%)",
-      "foreground": "hsl(220, 30%, 98%)",
-      "border": "hsl(220, 30%, 25%)"
+      "background": "hsl(222, 47%, 11%)",
+      "foreground": "hsl(0, 0%, 100%)",
+      "border": "hsl(215, 25%, 27%)",
+      "primary": "hsl(210, 40%, 98%)",
+      "accent": "hsl(217, 33%, 17%)"
+    },
+    "chart": {
+      "1": "hsl(220, 65%, 55%)",
+      "2": "hsl(215, 25%, 27%)",
+      "3": "hsl(217, 33%, 17%)",
+      "4": "hsl(222, 47%, 11%)",
+      "5": "hsl(220, 65%, 55%)"
     }
   }
 }
