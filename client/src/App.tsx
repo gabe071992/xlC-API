@@ -44,6 +44,7 @@ function Router() {
       <Route path="/distribution">
         {() => {
           const { user, loading } = useAuth();
+          const Distribution = lazy(() => import("@/pages/distribution"));
 
           if (loading) {
             return <div>Loading...</div>;
