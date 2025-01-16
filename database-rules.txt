@@ -1,0 +1,273 @@
+{
+  "rules": {
+    // User management - merged with existing rules
+    "users": {
+      ".read": "true",
+      "$userId": {
+        ".read": "true",
+        ".write": "true",
+        "peerId": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "wallet": {
+          ".read": "true",
+          ".write": "auth != null && auth.uid === $userId",
+          "balance": {
+            ".read": "true",
+            ".write": "auth != null && auth.uid === $userId"
+          }
+        },
+        "presence": {
+          ".read": "true",
+          ".write": "auth != null && auth.uid === $userId",
+          "status": {
+            ".validate": "newData.val() === 'online' || newData.val() === 'offline' || newData.val() === 'away'"
+          },
+          "lastSeen": {
+            ".validate": "newData.isNumber()"
+          }
+        },
+        // API additions for user profile
+        "email": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$/)"
+        },
+        "kycStatus": {
+          ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'approved' || newData.val() === 'rejected')"
+        },
+        "kycInfo": {
+          ".validate": "!newData.exists() || (newData.hasChildren(['fullName', 'dateOfBirth', 'documentType', 'documentNumber']))",
+          "documentType": {
+            ".validate": "newData.isString() && (newData.val() === 'passport' || newData.val() === 'nationalId' || newData.val() === 'drivingLicense')"
+          }
+        }
+      }
+    },
+
+    // Messaging system - keep existing
+    "messages": {
+      "$threadId": {
+        ".read": "auth != null && root.child('threads').child($threadId).child('participants').child(auth.uid).val() === true",
+        ".write": "auth != null && root.child('threads').child($threadId).child('participants').child(auth.uid).val() === true",
+        "$messageId": {
+          ".validate": "newData.hasChildren(['content', 'senderId', 'timestamp', 'type'])",
+          "content": {
+            ".validate": "newData.isString() && newData.val().length <= 10000"
+          },
+          "senderId": {
+            ".validate": "newData.val() === auth.uid"
+          },
+          "timestamp": {
+            ".validate": "newData.isNumber() && newData.val() <= now"
+          },
+          "type": {
+            ".validate": "newData.val() === 'text'"
+          }
+        }
+      }
+    },
+
+    // Thread management - keep existing
+    "threads": {
+      ".read": "auth != null",
+      "$threadId": {
+        ".write": "auth != null",
+        ".validate": "
+          newData.hasChild('participants') && 
+          newData.hasChild('createdAt') && 
+          newData.child('participants').hasChild(auth.uid) &&
+          newData.child('participants').child(auth.uid).val() === true &&
+          (!data.exists() || data.child('participants').child(auth.uid).val() === true)
+        ",
+        "participants": {
+          "$uid": {
+            ".validate": "newData.isBoolean()"
+          }
+        },
+        "lastMessage": {
+          ".validate": "!newData.exists() || (
+            newData.hasChildren(['content', 'senderId', 'timestamp']) &&
+            newData.child('content').isString() &&
+            newData.child('content').val().length <= 1000 &&
+            newData.child('senderId').val() === auth.uid &&
+            newData.child('timestamp').isNumber() &&
+            newData.child('timestamp').val() <= now
+          )"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        }
+      }
+    },
+
+    // API Wallet management - merged with existing
+    "wallets": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$address": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['userId', 'address', 'network', 'status'])",
+        "address": {
+          ".validate": "newData.isString() && newData.val().matches(/^0x[a-fA-F0-9]{40}$/)"
+        },
+        "network": {
+          ".validate": "newData.isString() && newData.val() === 'bsc'"
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'active' || newData.val() === 'inactive')"
+        }
+      }
+    },
+
+    // Keep existing message logs
+    "messageLogs": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+    // Keep existing admin data
+    "adminData": {
+      ".read": "auth != null",
+      ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+    },
+
+    // Keep existing link-fed
+    "link-fed": {
+      ".read": "auth != null",
+      ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+    },
+
+    // Transactions - merged with API implementation
+    "transactions": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$txId": {
+        ".validate": "newData.hasChildren(['from', 'to', 'amount', 'status', 'timestamp', 'userId'])",
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'pending' || newData.val() === 'completed' || newData.val() === 'failed' || newData.val() === 'cancelled')"
+        },
+        "amount": {
+          ".validate": "newData.isString() && newData.val().matches(/^\\d+\\.?\\d*$/)"
+        }
+      }
+    },
+
+    // Keep existing XLC data
+    "xlc": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+    },
+
+    // Keep existing tokenomics
+    "tokenomics": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+    },
+
+    // Keep existing offers
+    "offers": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+    },
+
+    // Staking pools - merged with API implementation
+    "stakingPools": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')",
+      "$poolId": {
+        ".validate": "newData.hasChildren(['name', 'rewardRate', 'totalStaked', 'minimumStake', 'status'])",
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'active' || newData.val() === 'inactive')"
+        }
+      }
+    },
+
+    // Keep existing user stakes
+    "userStakes": {
+      ".read": "auth != null",
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null && auth.uid === $userId"
+      }
+    },
+
+    // Keep existing rewards
+    "rewards": {
+      ".read": "auth != null",
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null && auth.uid === $userId"
+      }
+    },
+
+    // Keep existing rates and weights
+    "ratesAndWeights": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')",
+      "metrics": {
+        ".read": true,
+        ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+      },
+      "weights": {
+        ".read": true,
+        ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+      },
+      "baselineRate": {
+        ".read": true,
+        ".write": "auth != null && (auth.uid === 'Admin_UID_1' || auth.uid === 'Mj03qpcX9XPQDn9AlUzJPX3J7562' || auth.uid === 'Placeholder_for_second_admin_UID')"
+      }
+    },
+
+    // API additions
+    "apiKeys": {
+      ".read": "auth != null",
+      "$keyId": {
+        ".read": "auth != null && data.child('userId').val() === auth.uid",
+        ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['userId', 'name', 'scopes', 'createdAt', 'status'])",
+        "userId": {
+          ".validate": "newData.val() === auth.uid"
+        },
+        "scopes": {
+          "$scope": {
+            ".validate": "newData.val() === 'wallet:read' || 
+                         newData.val() === 'wallet:write' || 
+                         newData.val() === 'transaction:read' || 
+                         newData.val() === 'transaction:write' || 
+                         newData.val() === 'stake:read' || 
+                         newData.val() === 'stake:write' || 
+                         newData.val() === 'liquidity:read' || 
+                         newData.val() === 'liquidity:write'"
+          }
+        },
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'active' || newData.val() === 'revoked')"
+        }
+      }
+    },
+
+    "webhookLogs": {
+      ".read": "auth != null",
+      "$logId": {
+        ".read": "auth != null && data.child('userId').val() === auth.uid",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['userId', 'status', 'timestamp'])",
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'success' || newData.val() === 'failed')"
+        }
+      }
+    },
+
+    "passwordResets": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null && auth.uid === $userId",
+        ".validate": "newData.hasChildren(['code', 'expiresAt', 'attempts'])",
+        "attempts": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3"
+        }
+      }
+    }
+  }
+}
