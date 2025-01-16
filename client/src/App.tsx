@@ -17,6 +17,7 @@ function Router() {
         {() => {
           const { user, loading } = useAuth();
           const Dashboard = lazy(() => import("@/pages/dashboard"));
+          const Distribution = lazy(() => import("@/pages/distribution"));
 
           if (loading) {
             return <div>Loading...</div>;
@@ -39,6 +40,13 @@ function Router() {
             </React.Suspense>
           );
         }}
+      </Route>
+      <Route path="/distribution">
+        {() => (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <Distribution />
+          </React.Suspense>
+        )}
       </Route>
       <Route component={NotFound} />
     </Switch>
