@@ -108,8 +108,15 @@ Error Responses:
 POST /auth/logout
 - Description: Invalidates user tokens and clears Firebase session
 - Rate limit: 10 requests per minute
-- Requires: Valid JWT token in Authorization header
-- Content-Type: application/json
+- Requires: Firebase Authentication
+- Client Integration:
+  ```typescript
+  import { signOut } from "firebase/auth";
+  import { auth } from "@/lib/firebase";
+  
+  // Call Firebase signOut
+  await signOut(auth);
+  ```
 
 Success Response (200 OK):
 {
@@ -128,6 +135,11 @@ Error Responses:
     "error": "Invalid or expired token",
     "code": "AUTH_003"
   }
+
+Notes:
+- Client must handle both Firebase auth state and API session
+- Cleans up both client tokens and server refresh tokens
+- Automatically triggers AuthContext update
 
 3. USER MANAGEMENT
 -----------------
