@@ -16,20 +16,28 @@ export const verifyConnection = async (_req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
+    console.log('[AUTH] Login attempt started');
     const { email, password } = req.body;
+    console.log('[AUTH] Request body received:', { email, passwordReceived: !!password });
 
     if (!email || !password) {
+      console.log('[AUTH] Missing credentials');
       throw new APIError('Email and password are required', 400, 'AUTH_004');
     }
 
     // First verify if user exists
+    console.log('[AUTH] Attempting to verify user with Firebase');
     const userRecord = await auth.getUserByEmail(email)
-      .catch(() => {
+      .catch((error) => {
+        console.log('[AUTH] Firebase user verification failed:', error);
         throw new APIError('User not found', 404, 'AUTH_001');
       });
+    console.log('[AUTH] User verified successfully');
 
     // Create a custom token with expiration
+    console.log('[AUTH] Creating custom token');
     const token = await auth.createCustomToken(userRecord.uid);
+    console.log('[AUTH] Custom token created successfully');
     
     // Generate refresh token
     const refreshToken = await auth.createCustomToken(userRecord.uid, {
@@ -43,7 +51,8 @@ export const login = async (req: Request, res: Response) => {
       createdAt: new Date().toISOString()
     });
 
-    res.json({ 
+    console.log('[AUTH] Preparing response payload');
+    const response = { 
       token,
       refreshToken,
       user: {
@@ -51,8 +60,12 @@ export const login = async (req: Request, res: Response) => {
         email: userRecord.email,
         displayName: userRecord.displayName
       }
-    });
+    };
+    console.log('[AUTH] Sending response');
+    res.json(response);
+    console.log('[AUTH] Response sent successfully');
   } catch (error) {
+    console.log('[AUTH] Error in login process:', error);
     if (error instanceof APIError) throw error;
     console.error('Authentication error:', error);
     throw new APIError('Authentication failed', 401, 'AUTH_001');

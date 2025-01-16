@@ -17,8 +17,11 @@ export function AuthStatus() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[Client:Auth] Login attempt started');
     try {
+      console.log('[Client:Auth] Calling Firebase signInWithEmailAndPassword');
       await signInWithEmailAndPassword(auth, email, password);
+      console.log('[Client:Auth] Firebase authentication successful');
       setShowLogin(false);
       setEmail("");
       setPassword("");
@@ -27,7 +30,11 @@ export function AuthStatus() {
         description: "Logged in successfully",
       });
     } catch (error: any) {
-      console.error('Login error:', error);
+      console.log('[Client:Auth] Login error details:', {
+        code: error.code,
+        message: error.message,
+        fullError: error
+      });
       toast({
         variant: "destructive",
         title: "Error",
