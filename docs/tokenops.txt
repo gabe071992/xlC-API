@@ -1,0 +1,100 @@
+The Token Operations page (src/pages/TokenOperations/index.tsx) manages two main aspects:
+
+Token Operations (transfers, approvals)
+Rates & Weights Management
+DATABASE PATHS
+/xlc
+  - price: number (current token price)
+/ratesAndWeights
+  - baselineRate: number
+  - metrics: {
+      [metricId]: {
+        id: string
+        name: string
+        description: string
+        category: string
+        minValue: number
+        maxValue: number
+        currentValue: number
+      }
+    }
+  - weights: {
+      [weightId]: {
+        metricId: string
+        value: number
+      }
+    }
+COMPONENTS & FEATURES
+A. Token Operations Tab:
+
+Set Token Price Form
+
+Updates /xlc/price in database
+Requires admin privileges
+Transfer Form
+
+Transfer tokens between addresses
+Uses Web3 contract calls
+Validates wallet connection
+Approve Form
+
+Set spending allowances
+Uses Web3 contract calls
+Tracks approvals in state
+Transfer From Form
+
+Execute transfers using allowances
+Requires prior approval
+Validates allowance amounts
+Owner Operations
+
+Renounce ownership
+Transfer ownership
+Admin-only functions
+B. Rates & Weights Tab:
+
+Initial Setup Form
+
+Initializes rates and weights system
+Creates initial metric and weight
+Updates /ratesAndWeights
+Baseline Rate Form
+
+Sets system baseline rate
+Updates /ratesAndWeights/baselineRate
+Metrics Management
+
+Add/edit system metrics
+Updates /ratesAndWeights/metrics
+Weights Management
+
+Manage metric weights
+Updates /ratesAndWeights/weights
+KEY FUNCTIONS
+// Price Updates
+handlePriceSubmit(): Updates token price in database
+// Rate Management
+handleInitialSetup(): Initializes rates system
+handleBaselineRateSubmit(): Updates baseline rate
+refreshRatesAndWeights(): Reloads all rates data
+calculateDailyRate(): Computes current daily rate
+// Token Operations
+transfer(): Executes token transfers
+approve(): Sets token allowances
+transferFrom(): Executes approved transfers
+renounceOwnership(): Removes contract owner
+transferOwnership(): Changes contract owner
+STATE MANAGEMENT
+Uses React state for form data
+Uses Firebase Realtime Database for persistence
+Uses Web3 for blockchain interactions
+SECURITY
+Admin-only functions protected
+Web3 wallet validation
+Database rules validation
+Transaction signing checks
+DEPENDENCIES
+Web3.js for blockchain
+Firebase RTDB
+React state/effects
+Custom hooks and contexts
