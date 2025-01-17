@@ -192,7 +192,10 @@ export default function TemplateBuilder() {
                       <FormControl>
                         <Switch
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            form.trigger("features");
+                          }}
                         />
                       </FormControl>
                     </FormItem>
@@ -212,7 +215,10 @@ export default function TemplateBuilder() {
                       <FormControl>
                         <Switch
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            form.trigger("features");
+                          }}
                         />
                       </FormControl>
                     </FormItem>
@@ -232,7 +238,10 @@ export default function TemplateBuilder() {
                       <FormControl>
                         <Switch
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            form.trigger("features");
+                          }}
                         />
                       </FormControl>
                     </FormItem>
@@ -252,7 +261,56 @@ export default function TemplateBuilder() {
                       <FormControl>
                         <Switch
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            form.trigger("features");
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="features.taxable"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Taxable</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Apply tax on token transfers
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            form.trigger("features");
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="features.upgradeable"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Upgradeable</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Contract can be upgraded
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            form.trigger("features");
+                          }}
                         />
                       </FormControl>
                     </FormItem>
