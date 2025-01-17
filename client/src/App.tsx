@@ -1,3 +1,4 @@
+
 import React, { lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { queryClient } from "./lib/queryClient";
@@ -5,11 +6,24 @@ import { useAuth } from "@/lib/contexts/auth";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/lib/contexts/auth";
-import { Header } from "@/components/layout/Header";
-import NotFound from "@/pages/not-found";
-import { MainLayout } from "@/components/layout/MainLayout"; // Added import for MainLayout
-import { WagmiConfig } from 'wagmi'
-import { config } from './lib/web3'
+import { MainLayout } from "@/components/layout/MainLayout";
+import { WagmiConfig } from 'wagmi';
+import { config } from './lib/web3';
+
+const LazyUsers = lazy(() => import("@/pages/users"));
+const LazyTokenOperations = lazy(() => import("@/pages/token-operations"));
+const LazyDashboard = lazy(() => import("@/pages/dashboard"));
+const LazyDeploy = lazy(() => import("@/pages/deploy"));
+const LazyDistribution = lazy(() => import("@/pages/distribution"));
+
+const AuthProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Please log in</div>;
+
+  return <>{children}</>;
+};
 
 function Router() {
   return (
@@ -49,27 +63,10 @@ function Router() {
           </React.Suspense>
         </AuthProtectedRoute>
       }/>
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<div>Not Found</div>} />
     </Routes>
   );
 }
-
-
-const LazyUsers = lazy(() => import("@/pages/users"));
-const LazyTokenOperations = lazy(() => import("@/pages/token-operations"));
-const LazyDashboard = lazy(() => import("@/pages/dashboard"));
-const LazyDeploy = lazy(() => import("@/pages/deploy"));
-const LazyDistribution = lazy(() => import("@/pages/distribution"));
-
-const AuthProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div>Loading...</div>;
-  if (!user) return <div>Please log in</div>;
-
-  return children;
-};
-
 
 function App() {
   return (
