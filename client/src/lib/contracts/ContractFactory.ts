@@ -1,6 +1,6 @@
-import { ethers } from 'ethers';
+import { WalletClient, PublicClient } from 'wagmi';
 import { DeploymentStatus } from './types';
-import { PublicClient, WalletClient } from 'wagmi';
+import { parseUnits } from 'viem';
 
 export class ContractFactory {
   private provider: PublicClient;
@@ -31,32 +31,28 @@ export class ContractFactory {
         throw new Error("Could not get wallet address");
       }
 
-      const factory = new ethers.ContractFactory(
-        BEP20_ABI,
-        BEP20_BYTECODE,
-        this.signer
-      );
-
-      const contract = await factory.deploy(
-        name,
-        symbol,
-        decimals,
-        ethers.utils.parseUnits(totalSupply, decimals),
-        owner
-      );
-
-      updateStatus(DeploymentStatus.DEPLOYING, { txHash: contract.deployTransaction.hash });
-
-      await contract.deployed();
-
-      updateStatus(DeploymentStatus.SUCCESS, { 
-        contractAddress: contract.address,
-        txHash: contract.deployTransaction.hash 
+      const { request } = await this.provider.simulateContract({
+        account: address,
+        address: null as any,
+        abi: BEP20_ABI,
+        args: [name, symbol, decimals, parseUnits(totalSupply, decimals), owner],
+        bytecode: BEP20_BYTECODE,
       });
 
-      return contract.address;
+      const hash = await this.signer.deployContract(request);
+
+      updateStatus(DeploymentStatus.DEPLOYING, { txHash: hash });
+
+      const receipt = await this.provider.waitForTransactionReceipt({ hash });
+
+      updateStatus(DeploymentStatus.SUCCESS, { 
+        contractAddress: receipt.contractAddress,
+        txHash: hash 
+      });
+
+      return receipt.contractAddress || '';
     } catch (error) {
-      updateStatus(DeploymentStatus.FAILED, { error: error.message });
+      updateStatus(DeploymentStatus.FAILED, { error: (error as Error).message });
       throw error;
     }
   }
@@ -74,5 +70,4 @@ export const BEP20_ABI = [
   "function approve(address spender, uint256 value) public returns (bool)",
   "function allowance(address owner, address spender) public view returns (uint256)"
 ];
-
 export const BEP20_BYTECODE = "0x608060405234801561001057600080fd5b506040516108..."; // Your bytecode here
