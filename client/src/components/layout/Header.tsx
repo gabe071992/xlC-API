@@ -1,8 +1,8 @@
 import { AuthStatus } from "@/components/auth/AuthStatus";
-
 import { Wallet } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useWeb3 } from '@/lib/hooks/useWeb3'
 
 export function Header() {
   const { open } = useWeb3Modal()
