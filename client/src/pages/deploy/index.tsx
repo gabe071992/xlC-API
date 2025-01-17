@@ -166,10 +166,11 @@ export default function ContractDeploy() {
       setDeploymentError(null);
       setIsSubmitting(true);
 
-      const signer = await web3Provider?.getSigner();
-      if (!signer) {
+      if (!isConnected || !web3Provider) {
         throw new Error("Please connect your wallet");
       }
+
+      const signer = await web3Provider.getSigner();
 
       const address = await signer.getAddress();
       const factory = new ContractFactory(web3Provider, signer);
