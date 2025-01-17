@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ContractFactory } from '../contracts/ContractFactory';
 import { DeploymentStatus, DeploymentState } from '../contracts/types';
 import { useWeb3 } from './useWeb3';
@@ -9,6 +8,14 @@ export function useContractDeployment() {
   const [deploymentState, setDeploymentState] = useState<DeploymentState>({
     status: DeploymentStatus.PENDING
   });
+
+  const updateStatus = useCallback((status: DeploymentStatus, data?: any) => {
+    setDeploymentState(prev => ({
+      ...prev,
+      status,
+      ...data
+    }));
+  }, []);
 
   const deploy = async (
     name: string,
@@ -22,34 +29,16 @@ export function useContractDeployment() {
     }
 
     try {
-      setDeploymentState({
-        status: DeploymentStatus.DEPLOYING
-      });
-
       const factory = new ContractFactory(provider, signer);
-      
-      // Estimate gas first
-      const gasEstimate = await factory.estimateGas(
-        name,
-        symbol,
-        decimals,
-        totalSupply
-      );
 
-      // Deploy the contract
       const contractAddress = await factory.deployToken(
         name,
         symbol,
         decimals,
         totalSupply,
-        owner
+        owner,
+        updateStatus
       );
-
-      setDeploymentState({
-        status: DeploymentStatus.SUCCESS,
-        contractAddress,
-        gasEstimate
-      });
 
       return contractAddress;
     } catch (error) {

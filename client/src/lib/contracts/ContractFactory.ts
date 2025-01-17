@@ -52,14 +52,24 @@ export class ContractFactory implements IContractFactory {
     symbol: string,
     decimals: number,
     totalSupply: string,
-    owner: string
+    owner: string,
+    onStatus?: (status: DeploymentStatus, data?: any) => void
   ): Promise<string> {
     try {
+      onStatus?.(DeploymentStatus.DEPLOYING);
+      
       const factory = new ethers.ContractFactory(
         this.contractABI,
         this.contractBytecode,
         this.signer
       );
+
+      const deployTx = await factory.getDeployTransaction(
+        name, symbol, decimals, totalSupply, owner
+      );
+
+      const gasEstimate = await this.provider.estimateGas(deployTx);
+      onStatus?.(DeploymentStatus.DEPLOYING, { gasEstimate: gasEstimate.toString() });
 
       const contract = await factory.deploy(
         name,
@@ -69,7 +79,10 @@ export class ContractFactory implements IContractFactory {
         owner
       );
 
+      onStatus?.(DeploymentStatus.DEPLOYING, { txHash: contract.deployTransaction.hash });
+      
       await contract.deployed();
+      onStatus?.(DeploymentStatus.SUCCESS, { contractAddress: contract.address });
       return contract.address;
     } catch (error) {
       console.error('Error deploying token:', error);
