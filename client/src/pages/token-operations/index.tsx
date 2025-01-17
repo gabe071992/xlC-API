@@ -482,7 +482,32 @@ export default function TokenOperations() {
         </TabsContent>
 
         <TabsContent value="rates">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Rates & Weights Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Total Weight:</span>
+                    <span>{metrics.reduce((sum, _) => {
+                      const weight = weightForm.getValues("value");
+                      return sum + (Number(weight) || 0);
+                    }, 0)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Remaining Weight:</span>
+                    <span>{100 - metrics.reduce((sum, _) => {
+                      const weight = weightForm.getValues("value");
+                      return sum + (Number(weight) || 0);
+                    }, 0)}%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Baseline Rate</CardTitle>
@@ -642,6 +667,7 @@ export default function TokenOperations() {
                 </Form>
               </CardContent>
             </Card>
+            </div>
           </div>
         </TabsContent>
       </Tabs>
