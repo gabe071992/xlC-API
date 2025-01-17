@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { useAccount, useConnect, useDisconnect, useConfig, useWalletClient } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useConfig, useWalletClient, usePublicClient } from 'wagmi';
 
 export function useWeb3() {
   const { address, isConnected } = useAccount();
@@ -8,6 +8,7 @@ export function useWeb3() {
   const { disconnect } = useDisconnect();
   const config = useConfig();
   const { data: signer } = useWalletClient();
+  const provider = usePublicClient();
   const [chain, setChain] = useState(config.chains[0]);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export function useWeb3() {
     connect,
     disconnect,
     chain,
-    provider: config.transport,
+    provider,
     signer,
     connectors
   };
