@@ -160,7 +160,16 @@ export default function ContractDeploy() {
         </TabsContent>
 
         <TabsContent value="templates">
-          <TemplateManager templates={[]} onSelectTemplate={(template) => console.log(template)} />
+          <TemplateManager 
+            templates={templates} 
+            onSelectTemplate={(template) => {
+              console.log("Selected template:", template);
+              // Handle template selection
+              if (template.category === 'token') {
+                setActiveTab('deploy');
+              }
+            }} 
+          />
         </TabsContent>
 
         <TabsContent value="builder">
