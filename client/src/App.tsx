@@ -71,6 +71,34 @@ function Router() {
           );
         }}
       </Route>
+      <Route path="/deploy">
+        {() => {
+          const { user, loading } = useAuth();
+          const Deploy = lazy(() => import("@/pages/deploy"));
+
+          if (loading) {
+            return <div>Loading...</div>;
+          }
+
+          if (!user) {
+            return (
+              <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold mb-4">xlC</h1>
+                  <p className="mb-4">Please log in to access the dashboard</p>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <React.Suspense fallback={<div>Loading...</div>}>
+              <Deploy />
+            </React.Suspense>
+          );
+        }}
+      </Route>
+
       <Route path="/distribution">
         {() => {
           const { user, loading } = useAuth();
