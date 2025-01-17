@@ -78,12 +78,20 @@ const tokenFormSchema = z.object({
 
 export default function ContractDeploy() {
   const [templates, setTemplates] = useState<ContractTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
     const loadTemplates = async () => {
-      const loadedTemplates = await getTemplates();
-      setTemplates(loadedTemplates);
+      try {
+        const loadedTemplates = await getTemplates();
+        setTemplates(loadedTemplates || []);
+      } catch (error) {
+        console.error('Error loading templates:', error);
+        setTemplates([]);
+      } finally {
+        setLoading(false);
+      }
     };
     loadTemplates();
   }, []);

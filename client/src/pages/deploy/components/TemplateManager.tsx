@@ -11,9 +11,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface TemplateManagerProps {
   templates: ContractTemplate[];
   onSelectTemplate: (template: ContractTemplate) => void;
+  loading?: boolean;
 }
 
-export default function TemplateManager({ templates, onSelectTemplate }: TemplateManagerProps) {
+export default function TemplateManager({ templates = [], onSelectTemplate, loading = false }: TemplateManagerProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<ContractTemplate | null>(null);
