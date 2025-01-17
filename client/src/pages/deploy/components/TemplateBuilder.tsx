@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import type { ContractTemplate } from "@/lib/contracts/types";
+import { saveTemplate } from "@/lib/contracts/templates";
 
 const templateSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -48,14 +49,17 @@ export default function TemplateBuilder() {
 
   const onSubmit = async (values: TemplateFormValues) => {
     try {
-      const template: Partial<ContractTemplate> = {
+      const template: ContractTemplate = {
         ...values,
         id: crypto.randomUUID(),
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
+        abi: [],
+        bytecode: "",
+        parameters: values.parameters || []
       };
-      console.log("Saving template:", template);
-      // Add Firebase save logic here
+      await saveTemplate(template);
+      form.reset();
     } catch (error) {
       console.error("Error saving template:", error);
     }
