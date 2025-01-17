@@ -1,4 +1,4 @@
-do not change, edit, refactor, reformat, redcat, or delete any section of the code under any circumstance unless explicityly required. do not add any additional functionality that has not been explicitly requested. 
+do not change, edit, refactor, reformat, redact, or delete any section of the code under any circumstance unless explicityly required. do not add any additional functionality that has not been explicitly requested. 
 XLC ADMIN INTERFACE ANALYSIS
 ============================
 
