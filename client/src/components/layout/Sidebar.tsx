@@ -29,7 +29,7 @@ export function Sidebar({ className }: SidebarProps) {
     {
       label: "User Management",
       icon: Users,
-      href: "/users",
+      href: "/client/src/pages/users/index.tsx",
     },
     {
       label: "API Management",
