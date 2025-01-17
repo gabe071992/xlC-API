@@ -67,6 +67,9 @@ const tokenFormSchema = z.object({
   })
 });
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import ContractDashboard from "./components/ContractDashboard"
+
 export default function ContractDeploy() {
   const form = useForm({
     resolver: zodResolver(tokenFormSchema),
@@ -136,7 +139,20 @@ export default function ContractDeploy() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Contract Deployment</h1>
+      <h1 className="text-2xl font-bold">Contract Management</h1>
+      
+      <Tabs defaultValue="dashboard" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="deploy">Deploy Contract</TabsTrigger>
+          <TabsTrigger value="security">Security Controls</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="dashboard">
+          <ContractDashboard />
+        </TabsContent>
+
+        <TabsContent value="deploy">
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -395,6 +411,21 @@ export default function ContractDeploy() {
           </Card>
         </form>
       </Form>
+    </TabsContent>
+
+        <TabsContent value="security">
+          <Card>
+            <CardHeader>
+              <CardTitle>Security Controls</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <h3>Coming soon...</h3>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
