@@ -22,6 +22,7 @@ import ContractRegistry from "./components/ContractRegistry";
 // Added components
 import TemplateManager from "./components/TemplateManager";
 import TemplateBuilder from "./components/TemplateBuilder";
+import { useWeb3 } from "@/lib/hooks/useWeb3";
 
 
 const tokenFormSchema = z.object({
@@ -157,13 +158,14 @@ export default function ContractDeploy() {
   });
 
   const { deploymentState, deploy } = useContractDeployment();
+  const { provider: web3Provider } = useWeb3();
   const [deploymentError, setDeploymentError] = useState<string | null>(null);
 
   const onSubmit = async (data: z.infer<typeof tokenFormSchema>) => {
     try {
       setDeploymentError(null);
       setIsSubmitting(true);
-      
+
       const signer = await web3Provider?.getSigner();
       if (!signer) {
         throw new Error("Please connect your wallet");
@@ -171,7 +173,7 @@ export default function ContractDeploy() {
 
       const address = await signer.getAddress();
       const factory = new ContractFactory(web3Provider, signer);
-      
+
       // Get gas estimate before deployment
       const gasEstimate = await factory.estimateGas(
         data.name,
