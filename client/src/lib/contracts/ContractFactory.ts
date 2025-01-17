@@ -2,10 +2,10 @@ import { ethers } from 'ethers';
 import { DeploymentStatus } from './types';
 
 export class ContractFactory {
-  private provider: ethers.providers.Provider;
-  private signer: ethers.Signer;
+  private provider: any;
+  private signer: any;
 
-  constructor(provider: ethers.providers.Provider, signer: ethers.Signer) {
+  constructor(provider: any, signer: any) {
     this.provider = provider;
     this.signer = signer;
   }
@@ -25,6 +25,13 @@ export class ContractFactory {
         throw new Error("Signer not available");
       }
 
+      // Get the address from wagmi wallet client
+      const address = this.signer.account?.address;
+      if (!address) {
+        throw new Error("Could not get wallet address");
+      }
+
+      // Create contract instance with wagmi
       const factory = new ethers.ContractFactory(
         BEP20_ABI,
         BEP20_BYTECODE,
