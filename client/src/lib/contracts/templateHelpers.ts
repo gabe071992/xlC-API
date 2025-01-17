@@ -1,5 +1,6 @@
 
 import { TokenFeatures } from './types';
+import { BEP20_ABI, BEP20_BYTECODE } from './ContractFactory';
 
 const FEATURE_SNIPPETS = {
   burnable: `

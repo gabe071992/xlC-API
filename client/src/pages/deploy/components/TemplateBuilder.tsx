@@ -88,8 +88,15 @@ export default function TemplateBuilder() {
     const features = form.watch('features');
     const category = form.watch('category');
     
-    if (features && category === 'token') {
-      const generatedSource = generateTokenSource(features);
+    if (category === 'token') {
+      const tokenFeatures = {
+        burnable: features?.burnable || false,
+        mintable: features?.mintable || false,
+        pausable: features?.pausable || false,
+        reflective: features?.reflective || false,
+        taxable: features?.taxable || false
+      };
+      const generatedSource = generateTokenSource(tokenFeatures);
       form.setValue('source', generatedSource);
     }
   }, [form.watch('features'), form.watch('category')]);
