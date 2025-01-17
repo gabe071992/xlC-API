@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +15,10 @@ import * as z from "zod";
 import ContractDashboard from "./components/ContractDashboard";
 import SecurityControls from "./components/SecurityControls";
 import ContractRegistry from "./components/ContractRegistry";
+// Added components
+import TemplateManager from "./components/TemplateManager";
+import TemplateBuilder from "./components/TemplateBuilder";
+
 
 const tokenFormSchema = z.object({
   name: z.string().min(1, "Token name required"),
@@ -141,7 +144,7 @@ export default function ContractDeploy() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold">Contract Management</h1>
-      
+
       <Tabs defaultValue="dashboard" className="space-y-4">
         <TabsList>
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
@@ -154,6 +157,14 @@ export default function ContractDeploy() {
 
         <TabsContent value="dashboard">
           <ContractDashboard />
+        </TabsContent>
+
+        <TabsContent value="templates">
+          <TemplateManager templates={[]} onSelectTemplate={(template) => console.log(template)} />
+        </TabsContent>
+
+        <TabsContent value="builder">
+          <TemplateBuilder />
         </TabsContent>
 
         <TabsContent value="deploy">
