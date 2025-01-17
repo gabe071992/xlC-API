@@ -45,6 +45,8 @@ Data Structure:
   }
 }
 
+above is an example of exactly how offers are stored currently. 
+
 2. Staking Pool Form
 -------------------
 Location: src/pages/Distribution/components/StakingPoolForm.tsx
@@ -58,21 +60,11 @@ Form Fields:
 - End Date (required)
 - Status (active/inactive)
 
-Database Path: /staking/pools/*
-Rules:
-{
-  "staking": {
-    "pools": {
-      ".read": "auth != null",
-      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
-    }
-  }
-}
+Database Path: stakingPools/*
 
 Data Structure:
 {
-  "staking": {
-    "pools": {
+  "stakingPools": {
       "$poolId": {
         "id": string,
         "name": string,
@@ -92,7 +84,7 @@ Data Structure:
 ------------------
 Location: src/pages/Distribution/components/RewardsOverview.tsx
 
-Database Path: /staking/rewards/*
+Database Path: rewards/*
 Rules:
 {
   "staking": {
