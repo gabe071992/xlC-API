@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import type { ContractTemplate } from "@/lib/contracts/types";
 import { saveTemplate } from "@/lib/contracts/templates";
+import ContractPreview from "./ContractPreview"; // Imported ContractPreview component
 
 const templateSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -231,6 +231,7 @@ export default function TemplateBuilder() {
             <Button type="submit">Save Template</Button>
           </form>
         </Form>
+        <ContractPreview source={form.watch('source')}/> {/* Added ContractPreview component */}
       </CardContent>
     </Card>
   );
