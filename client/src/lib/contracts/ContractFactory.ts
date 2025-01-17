@@ -26,10 +26,10 @@ export class ContractFactory {
         throw new Error("Signer not available");
       }
 
-      const address = this.signer.account?.address;
-      if (!address) {
+      if (!this.signer?.account?.address) {
         throw new Error("Could not get wallet address");
       }
+      const address = this.signer.account.address;
 
       const { request } = await this.provider.simulateContract({
         account: address,
