@@ -23,8 +23,6 @@ import ContractRegistry from "./components/ContractRegistry";
 import TemplateManager from "./components/TemplateManager";
 import TemplateBuilder from "./components/TemplateBuilder";
 import { useWeb3 } from "@/lib/hooks/useWeb3";
-import { getTemplates } from "@/lib/contracts/templates";
-import { ethers } from "ethers";
 
 
 const tokenFormSchema = z.object({
