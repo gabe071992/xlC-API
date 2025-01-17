@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { ContractFactory } from '../contracts/ContractFactory';
 import { DeploymentStatus, DeploymentState } from '../contracts/types';
-import { useWeb3 } from '@/lib/hooks/useWeb3';
+import { useWeb3 } from './useWeb3';
 
 export function useContractDeployment() {
   const { provider, signer } = useWeb3();
