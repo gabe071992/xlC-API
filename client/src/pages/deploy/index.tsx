@@ -10,7 +10,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
+import { useForm } from "react-hook-form";
+
 export default function ContractDeploy() {
+  const tokenForm = useForm({
+    defaultValues: {
+      name: "",
+      symbol: "",
+      teamAllocation: "",
+      advisorsAllocation: "",
+      publicSale: "",
+      liquidity: ""
+    }
+  });
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold">Contract Deployment</h1>
@@ -59,9 +72,11 @@ export default function ContractDeploy() {
               <CardTitle>Token Configuration</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <FormField
+              <Form {...tokenForm}>
+                <form className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={tokenForm.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
@@ -159,8 +174,8 @@ export default function ContractDeploy() {
                       )}
                     />
                   </div>
-                </div>
-              </div>
+                </form>
+              </Form>
             </CardContent>
           </Card>
         </TabsContent>
