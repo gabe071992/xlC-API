@@ -186,13 +186,6 @@ export default function ContractDeploy() {
         Number(data.decimals)
       );
 
-      const signer = await web3Provider?.getSigner();
-      if (!signer) {
-        throw new Error("Please connect your wallet");
-      }
-
-      const address = await signer.getAddress();
-
       await deploy(
         data.name,
         data.symbol,
