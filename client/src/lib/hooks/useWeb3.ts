@@ -1,15 +1,21 @@
 
 import { useEffect, useState } from 'react';
-import { useAccount, useConnect, useDisconnect, useProvider, useSigner } from 'wagmi';
-import { useNetwork } from 'wagmi/react';
+import { 
+  useAccount, 
+  useConnect, 
+  useDisconnect, 
+  useNetwork,
+  usePublicClient,
+  useWalletClient
+} from 'wagmi/react';
 
 export function useWeb3() {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { chain } = useNetwork();
-  const provider = useProvider();
-  const { data: signer } = useSigner();
+  const provider = usePublicClient();
+  const { data: signer } = useWalletClient();
 
   return {
     address,
