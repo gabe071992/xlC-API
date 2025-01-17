@@ -19,7 +19,7 @@ export function Sidebar({ className }: SidebarProps) {
     { 
       label: "Dashboard",
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: "/client/src/pages/dashboard/index.tsx",
     },
     {
       label: "Token Operations",
