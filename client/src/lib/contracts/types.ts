@@ -3,7 +3,9 @@ export enum DeploymentStatus {
   PENDING = 'PENDING',
   DEPLOYING = 'DEPLOYING',
   SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
+  VERIFYING = 'VERIFYING',
+  VERIFIED = 'VERIFIED'
 }
 
 export interface DeploymentState {

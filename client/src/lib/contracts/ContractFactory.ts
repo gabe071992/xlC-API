@@ -47,6 +47,39 @@ export class ContractFactory implements IContractFactory {
     this.signer = signer;
   }
 
+  private validateParameters(
+    name: string,
+    symbol: string,
+    decimals: number,
+    totalSupply: string,
+    owner: string
+  ): void {
+    if (!name || name.length < 1 || name.length > 50) {
+      throw new Error('Name must be between 1 and 50 characters');
+    }
+    
+    if (!symbol || symbol.length < 1 || symbol.length > 10) {
+      throw new Error('Symbol must be between 1 and 10 characters');
+    }
+    
+    if (decimals < 0 || decimals > 18) {
+      throw new Error('Decimals must be between 0 and 18');
+    }
+    
+    if (!ethers.utils.isAddress(owner)) {
+      throw new Error('Invalid owner address');
+    }
+    
+    try {
+      const supply = ethers.BigNumber.from(totalSupply);
+      if (supply.lte(0)) {
+        throw new Error('Total supply must be greater than 0');
+      }
+    } catch {
+      throw new Error('Invalid total supply value');
+    }
+  }
+
   async deployToken(
     name: string,
     symbol: string,
@@ -56,6 +89,7 @@ export class ContractFactory implements IContractFactory {
     onStatus?: (status: DeploymentStatus, data?: any) => void
   ): Promise<string> {
     try {
+      this.validateParameters(name, symbol, decimals, totalSupply, owner);
       onStatus?.(DeploymentStatus.DEPLOYING);
       
       const factory = new ethers.ContractFactory(
@@ -82,8 +116,45 @@ export class ContractFactory implements IContractFactory {
       onStatus?.(DeploymentStatus.DEPLOYING, { txHash: contract.deployTransaction.hash });
       
       await contract.deployed();
-      onStatus?.(DeploymentStatus.SUCCESS, { contractAddress: contract.address });
-      return contract.address;
+      const contractAddress = contract.address;
+      
+      onStatus?.(DeploymentStatus.SUCCESS, { contractAddress });
+      
+      try {
+        const constructorArgs = ethers.utils.defaultAbiCoder.encode(
+          ['string', 'string', 'uint8', 'uint256', 'address'],
+          [name, symbol, decimals, totalSupply, owner]
+        );
+        
+        const verificationGuid = await verifyContract({
+          contractAddress,
+          sourceCode: this.contractSource,
+          contractName: 'Token',
+          compilerVersion: 'v0.8.17+commit.8df45f5f',
+          optimizationUsed: 1,
+          runs: 200,
+          constructorArguments: constructorArgs.slice(2)
+        });
+        
+        onStatus?.(DeploymentStatus.VERIFYING, { verificationGuid });
+        
+        // Check verification status
+        let verified = false;
+        for (let i = 0; i < 10; i++) {
+          await new Promise(r => setTimeout(r, 5000));
+          verified = await checkVerificationStatus(verificationGuid);
+          if (verified) break;
+        }
+        
+        if (verified) {
+          onStatus?.(DeploymentStatus.VERIFIED, { contractAddress });
+        }
+      } catch (verifyError) {
+        console.error('Verification failed:', verifyError);
+        // Don't throw, just log the error since deployment was successful
+      }
+      
+      return contractAddress;
     } catch (error) {
       console.error('Error deploying token:', error);
       throw error;
