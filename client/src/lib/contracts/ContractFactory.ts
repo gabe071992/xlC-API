@@ -2,6 +2,13 @@
 import { ethers } from 'ethers';
 import { DeploymentStatus } from './types';
 
+export import { ethers } from "ethers";
+import { DeploymentStatus } from "./types";
+import { verifyContract, checkVerificationStatus } from "./verification";
+
+export const BEP20_ABI = [];  // Add your token ABI here
+export const BEP20_BYTECODE = "";  // Add your token bytecode here
+
 export class ContractFactory {
   private provider: ethers.providers.Provider;
   private signer: ethers.Signer;
