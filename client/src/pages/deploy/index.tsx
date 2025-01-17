@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -18,12 +18,15 @@ const tokenFormSchema = z.object({
   symbol: z.string().min(1, "Token symbol required"),
   decimals: z.string().min(1, "Decimals required"),
   totalSupply: z.string().min(1, "Total supply required"),
+  contractType: z.enum(["standard", "burn", "dividend", "fee", "custom"]),
+  baseURI: z.string().optional(),
   distribution: z.object({
     team: z.string(),
     advisors: z.string(),
     publicSale: z.string(),
     liquidity: z.string(),
-    marketing: z.string()
+    marketing: z.string(),
+    development: z.string()
   }),
   features: z.object({
     burnable: z.boolean(),
@@ -34,18 +37,33 @@ const tokenFormSchema = z.object({
     deflation: z.boolean(),
     blacklist: z.boolean(),
     maxWallet: z.boolean(),
-    antiBot: z.boolean()
+    antiBot: z.boolean(),
+    reflections: z.boolean(),
+    autoLiquidity: z.boolean(),
+    dividends: z.boolean()
+  }),
+  fees: z.object({
+    developerFee: z.string(),
+    reflectionFee: z.string(),
+    liquidityFee: z.string(),
+    marketingFee: z.string(),
+    buybackFee: z.string()
+  }),
+  security: z.object({
+    antiSnipe: z.boolean(),
+    tradingDelay: z.string(),
+    maxTxAmount: z.string(),
+    maxWalletAmount: z.string()
   }),
   advanced: z.object({
-    maxTransactionAmount: z.string().optional(),
-    maxWalletAmount: z.string().optional(),
     buyTax: z.string().optional(),
     sellTax: z.string().optional(),
     transferTax: z.string().optional(),
     deflationRate: z.string().optional(),
-    liquidityFee: z.string().optional(),
-    marketingFee: z.string().optional(),
-    rewardsFee: z.string().optional()
+    rewardToken: z.string().optional(),
+    rewardsThreshold: z.string().optional(),
+    autoLP: z.string().optional(),
+    swapThreshold: z.string().optional()
   })
 });
 
@@ -57,12 +75,15 @@ export default function ContractDeploy() {
       symbol: "",
       decimals: "18",
       totalSupply: "",
+      contractType: "standard",
+      baseURI: "",
       distribution: {
         team: "15",
         advisors: "10",
         publicSale: "40",
         liquidity: "25",
-        marketing: "10"
+        marketing: "5",
+        development: "5"
       },
       features: {
         burnable: false,
@@ -73,26 +94,41 @@ export default function ContractDeploy() {
         deflation: false,
         blacklist: false,
         maxWallet: false,
-        antiBot: false
+        antiBot: false,
+        reflections: false,
+        autoLiquidity: false,
+        dividends: false
+      },
+      fees: {
+        developerFee: "0",
+        reflectionFee: "0",
+        liquidityFee: "0",
+        marketingFee: "0",
+        buybackFee: "0"
+      },
+      security: {
+        antiSnipe: false,
+        tradingDelay: "0",
+        maxTxAmount: "0",
+        maxWalletAmount: "0"
       },
       advanced: {
-        maxTransactionAmount: "",
-        maxWalletAmount: "",
-        buyTax: "",
-        sellTax: "",
-        transferTax: "",
-        deflationRate: "",
-        liquidityFee: "",
-        marketingFee: "",
-        rewardsFee: ""
+        buyTax: "0",
+        sellTax: "0",
+        transferTax: "0",
+        deflationRate: "0",
+        rewardToken: "",
+        rewardsThreshold: "0",
+        autoLP: "0",
+        swapThreshold: "0"
       }
     }
   });
 
   const onSubmit = async (data: z.infer<typeof tokenFormSchema>) => {
     try {
-      // API call to deploy token will go here
       console.log("Deploying token:", data);
+      // API call to deploy token will go here
     } catch (error) {
       console.error("Error deploying token:", error);
     }
@@ -113,6 +149,34 @@ export default function ContractDeploy() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
+                    name="contractType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contract Type</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select contract type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="standard">Standard Token</SelectItem>
+                            <SelectItem value="burn">Burn Token</SelectItem>
+                            <SelectItem value="dividend">Dividend Token</SelectItem>
+                            <SelectItem value="fee">Fee Token</SelectItem>
+                            <SelectItem value="custom">Custom Token</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
@@ -124,6 +188,7 @@ export default function ContractDeploy() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="symbol"
@@ -137,6 +202,7 @@ export default function ContractDeploy() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="decimals"
@@ -150,6 +216,7 @@ export default function ContractDeploy() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="totalSupply"
@@ -163,6 +230,20 @@ export default function ContractDeploy() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="baseURI"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Base URI</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="ipfs://..." />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <Separator />
@@ -170,156 +251,40 @@ export default function ContractDeploy() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Token Features</h3>
                   <div className="grid gap-4 md:grid-cols-3">
-                    <FormField
-                      control={form.control}
-                      name="features.burnable"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Burnable</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.mintable"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Mintable</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.pausable"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Pausable</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.upgradeable"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Upgradeable</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.taxable"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Taxable</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.deflation"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Deflation</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.blacklist"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Blacklist</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.maxWallet"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Max Wallet</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="features.antiBot"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Anti-Bot</FormLabel>
-                        </FormItem>
-                      )}
-                    />
+                    {Object.entries(form.watch("features")).map(([key, value]) => (
+                      <FormField
+                        key={key}
+                        control={form.control}
+                        name={`features.${key}` as any}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center space-x-2">
+                            <FormControl>
+                              <Switch 
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormLabel className="capitalize">{key}</FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
                   </div>
                 </div>
 
                 <Separator />
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Advanced Configuration</h3>
+                  <h3 className="text-lg font-medium">Fee Configuration</h3>
                   <div className="grid gap-4 md:grid-cols-2">
-                    {form.watch("features.maxWallet") && (
+                    {Object.entries(form.watch("fees")).map(([key]) => (
                       <FormField
+                        key={key}
                         control={form.control}
-                        name="advanced.maxWalletAmount"
+                        name={`fees.${key}` as any}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Max Wallet Amount (%)</FormLabel>
+                            <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
                             <FormControl>
                               <Input type="number" {...field} />
                             </FormControl>
@@ -327,15 +292,40 @@ export default function ContractDeploy() {
                           </FormItem>
                         )}
                       />
-                    )}
-                    {form.watch("features.taxable") && (
-                      <>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Security Settings</h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="security.antiSnipe"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center space-x-2">
+                          <FormControl>
+                            <Switch 
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormLabel>Anti-Snipe Protection</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                    {Object.entries(form.watch("security"))
+                      .filter(([key]) => key !== "antiSnipe")
+                      .map(([key]) => (
                         <FormField
+                          key={key}
                           control={form.control}
-                          name="advanced.buyTax"
+                          name={`security.${key}` as any}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Buy Tax (%)</FormLabel>
+                              <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
                               <FormControl>
                                 <Input type="number" {...field} />
                               </FormControl>
@@ -343,49 +333,7 @@ export default function ContractDeploy() {
                             </FormItem>
                           )}
                         />
-                        <FormField
-                          control={form.control}
-                          name="advanced.sellTax"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Sell Tax (%)</FormLabel>
-                              <FormControl>
-                                <Input type="number" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="advanced.transferTax"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Transfer Tax (%)</FormLabel>
-                              <FormControl>
-                                <Input type="number" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </>
-                    )}
-                    {form.watch("features.deflation") && (
-                      <FormField
-                        control={form.control}
-                        name="advanced.deflationRate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Deflation Rate (%)</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
+                    ))}
                   </div>
                 </div>
 
@@ -394,73 +342,51 @@ export default function ContractDeploy() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Distribution Configuration</h3>
                   <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="distribution.team"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Team Allocation (%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="distribution.advisors"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Advisors Allocation (%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="distribution.publicSale"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Public Sale (%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="distribution.liquidity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Liquidity (%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="distribution.marketing"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Marketing (%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {Object.entries(form.watch("distribution")).map(([key]) => (
+                      <FormField
+                        key={key}
+                        control={form.control}
+                        name={`distribution.${key}` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="capitalize">{key} Allocation (%)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))}
                   </div>
                 </div>
+
+                {form.watch("contractType") === "custom" && (
+                  <>
+                    <Separator />
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Advanced Configuration</h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {Object.entries(form.watch("advanced")).map(([key]) => (
+                          <FormField
+                            key={key}
+                            control={form.control}
+                            name={`advanced.${key}` as any}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+                                <FormControl>
+                                  <Input {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="mt-6">
                 <Button type="submit">Deploy Token</Button>
