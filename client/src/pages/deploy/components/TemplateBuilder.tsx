@@ -86,11 +86,13 @@ export default function TemplateBuilder() {
 
   useEffect(() => {
     const features = form.watch('features');
-    if (features) {
+    const category = form.watch('category');
+    
+    if (features && category === 'token') {
       const generatedSource = generateTokenSource(features);
       form.setValue('source', generatedSource);
     }
-  }, [form.watch('features')]);
+  }, [form.watch('features'), form.watch('category')]);
 
   return (
     <Card>
