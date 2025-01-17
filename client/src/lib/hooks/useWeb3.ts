@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
-import { useAccount, useConnect, useDisconnect, useProvider, useSigner, useNetwork } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useProvider, useSigner } from 'wagmi';
+import { useNetwork } from 'wagmi/react';
 
 export function useWeb3() {
   const { address, isConnected } = useAccount();
