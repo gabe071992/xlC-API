@@ -161,6 +161,15 @@ export default function ContractDeploy() {
     try {
       setDeploymentError(null);
       setIsSubmitting(true);
+      
+      // Get gas estimate before deployment
+      const gasEstimate = await factory.estimateGas(
+        data.name,
+        data.symbol,
+        Number(data.decimals),
+        data.totalSupply,
+        address
+      );
 
       const totalSupplyWithDecimals = ethers.utils.parseUnits(
         data.totalSupply,

@@ -45,6 +45,24 @@ export class ContractFactory {
         txHash: contract.deployTransaction.hash 
       });
 
+      // Initiate verification
+      updateStatus(DeploymentStatus.VERIFYING);
+      const verificationGuid = await verifyContract({
+        contractAddress: contract.address,
+        sourceCode: contract.interface.format('full'),
+        contractName: 'Token',
+        compilerVersion: '0.8.0',
+        optimizationUsed: 1,
+        runs: 200,
+        constructorArguments: contract.interface.encodeDeploy([name, symbol, decimals, totalSupply, owner])
+      });
+
+      // Check verification status
+      const isVerified = await checkVerificationStatus(verificationGuid);
+      if (isVerified) {
+        updateStatus(DeploymentStatus.VERIFIED);
+      }
+
       return contract.address;
     } catch (error) {
       updateStatus(DeploymentStatus.FAILED, { error: error.message });
