@@ -77,102 +77,108 @@ export default function ContractDeploy() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <FormField
                       control={tokenForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    name="symbol"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token Symbol</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Token Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={tokenForm.control}
+                      name="symbol"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Token Symbol</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <Separator />
-                
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Token Features</h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="flex items-center space-x-2">
-                      <Switch id="burnable" />
-                      <Label htmlFor="burnable">Burnable</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="mintable" />
-                      <Label htmlFor="mintable">Mintable</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="pausable" />
-                      <Label htmlFor="pausable">Pausable</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="upgradeable" />
-                      <Label htmlFor="upgradeable">Upgradeable</Label>
+                  <Separator />
+                  
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Token Features</h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="flex items-center space-x-2">
+                        <Switch id="burnable" />
+                        <Label htmlFor="burnable">Burnable</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch id="mintable" />
+                        <Label htmlFor="mintable">Mintable</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch id="pausable" />
+                        <Label htmlFor="pausable">Pausable</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch id="upgradeable" />
+                        <Label htmlFor="upgradeable">Upgradeable</Label>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <Separator />
+                  <Separator />
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Distribution Configuration</h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      name="teamAllocation"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Team Allocation (15%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="advisorsAllocation"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Advisors Allocation (10%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="publicSale"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Public Sale (40%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="liquidity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Liquidity (25%)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Distribution Configuration</h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <FormField
+                        control={tokenForm.control}
+                        name="teamAllocation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Team Allocation (15%)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={tokenForm.control}
+                        name="advisorsAllocation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Advisors Allocation (10%)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={tokenForm.control}
+                        name="publicSale"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Public Sale (40%)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={tokenForm.control}
+                        name="liquidity"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Liquidity (25%)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                 </form>
               </Form>
