@@ -1,9 +1,8 @@
-
 import { useState, useCallback } from 'react';
 import { ContractFactory } from '../contracts/ContractFactory';
 import { DeploymentStatus, DeploymentState } from '../contracts/types';
-import { useWeb3 } from './useWeb3';
-import { PublicClient, WalletClient } from 'wagmi';
+import { useWeb3 } from '@/lib/hooks/useWeb3';
+import type { PublicClient, WalletClient } from 'wagmi';
 
 export function useContractDeployment() {
   const { provider: publicClient, signer: walletClient } = useWeb3();
