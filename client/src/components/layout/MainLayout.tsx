@@ -26,18 +26,20 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <Header user={user} /> {/* Pass user status to Header */}
         <div className="flex-1 flex">
           {user && (
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden absolute left-4 top-4">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="p-0">
-                <Sidebar className="w-64" />
-              </SheetContent>
-            </Sheet>
+            <>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden absolute left-4 top-4">
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0">
+                  <Sidebar className="w-64" />
+                </SheetContent>
+              </Sheet>
+              <Sidebar className="w-64 hidden md:block" />
+            </>
           )}
-          <Sidebar className="w-64 hidden md:block" />
           <main className="flex-1 p-4 md:p-6">
             {children}
           </main>

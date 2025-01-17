@@ -1,7 +1,8 @@
 import { useAuth } from "@/lib/contexts/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogIn, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
+import { GlowingOrb } from "./GlowingOrb";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
@@ -89,10 +90,7 @@ export function AuthStatus() {
             <Button variant="ghost" onClick={() => setShowLogin(false)}>Cancel</Button>
           </form>
         ) : (
-          <Button variant="ghost" onClick={() => setShowLogin(true)}>
-            <LogIn className="h-5 w-5 mr-2" />
-            Login
-          </Button>
+          <GlowingOrb onClick={() => setShowLogin(true)} />
         )}
       </div>
     );
