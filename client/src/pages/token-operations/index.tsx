@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ref, get, set, push } from "firebase/database";
 import { database } from "@/lib/firebase";
@@ -56,6 +55,22 @@ const weightFormSchema = z.object({
   value: z.string().min(1, "Weight value is required"),
 });
 
+const approveFormSchema = z.object({
+  spender: z.string().min(1, "Spender address is required"),
+  amount: z.string().min(1, "Amount is required"),
+});
+
+const transferFromFormSchema = z.object({
+  from: z.string().min(1, "From address is required"),
+  to: z.string().min(1, "To address is required"),
+  amount: z.string().min(1, "Amount is required"),
+});
+
+const ownershipFormSchema = z.object({
+  newOwner: z.string().min(1, "New owner address is required"),
+});
+
+
 export default function TokenOperations() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [metrics, setMetrics] = useState<Metric[]>([]);
@@ -92,6 +107,21 @@ export default function TokenOperations() {
       metricId: "",
       value: "",
     },
+  });
+
+  const approveForm = useForm({
+    resolver: zodResolver(approveFormSchema),
+    defaultValues: { spender: "", amount: "" },
+  });
+
+  const transferFromForm = useForm({
+    resolver: zodResolver(transferFromFormSchema),
+    defaultValues: { from: "", to: "", amount: "" },
+  });
+
+  const ownershipForm = useForm({
+    resolver: zodResolver(ownershipFormSchema),
+    defaultValues: { newOwner: "" },
   });
 
   // Fetch metrics on component mount
@@ -184,10 +214,58 @@ export default function TokenOperations() {
     }
   };
 
+  const handleApprove = async (values: z.infer<typeof approveFormSchema>) => {
+    try {
+      setIsSubmitting(true);
+      // Web3 approve implementation will go here
+      approveForm.reset();
+    } catch (error) {
+      console.error('Error approving tokens:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTransferFrom = async (values: z.infer<typeof transferFromFormSchema>) => {
+    try {
+      setIsSubmitting(true);
+      // Web3 transferFrom implementation will go here
+      transferFromForm.reset();
+    } catch (error) {
+      console.error('Error transferring tokens from:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTransferOwnership = async (values: z.infer<typeof ownershipFormSchema>) => {
+    try {
+      setIsSubmitting(true);
+      // Web3 transferOwnership implementation will go here
+      ownershipForm.reset();
+    } catch (error) {
+      console.error('Error transferring ownership:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRenounceOwnership = async () => {
+    try {
+      setIsSubmitting(true);
+      // Web3 renounceOwnership implementation will go here
+    } catch (error) {
+      console.error('Error renouncing ownership:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Token Operations</h1>
-      
+
       <Tabs defaultValue="operations" className="space-y-4">
         <TabsList>
           <TabsTrigger value="operations">Token Operations</TabsTrigger>
@@ -262,6 +340,142 @@ export default function TokenOperations() {
                     </Button>
                   </form>
                 </Form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Approve Tokens</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...approveForm}>
+                  <form onSubmit={approveForm.handleSubmit(handleApprove)} className="space-y-4">
+                    <FormField
+                      control={approveForm.control}
+                      name="spender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Spender Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={approveForm.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Amount</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.000001" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Approving..." : "Approve"}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Transfer From</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...transferFromForm}>
+                  <form onSubmit={transferFromForm.handleSubmit(handleTransferFrom)} className="space-y-4">
+                    <FormField
+                      control={transferFromForm.control}
+                      name="from"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>From Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={transferFromForm.control}
+                      name="to"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>To Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={transferFromForm.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Amount</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.000001" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Transferring..." : "Transfer From"}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Owner Operations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <Form {...ownershipForm}>
+                    <form onSubmit={ownershipForm.handleSubmit(handleTransferOwnership)} className="space-y-4">
+                      <FormField
+                        control={ownershipForm.control}
+                        name="newOwner"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Owner Address</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "Transferring..." : "Transfer Ownership"}
+                      </Button>
+                    </form>
+                  </Form>
+
+                  <div>
+                    <Button
+                      onClick={handleRenounceOwnership}
+                      disabled={isSubmitting}
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      {isSubmitting ? "Renouncing..." : "Renounce Ownership"}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
