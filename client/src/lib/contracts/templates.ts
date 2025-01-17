@@ -1,4 +1,3 @@
-
 import { ref, set, get, query, orderByChild } from "firebase/database";
 import { database } from "../firebase";
 import { ContractTemplate } from "./types";

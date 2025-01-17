@@ -97,7 +97,7 @@ export default function TemplateManager({ templates = [], onSelectTemplate, load
                         <h4 className="font-medium">Description</h4>
                         <p className="text-sm text-muted-foreground">{template.description}</p>
                       </div>
-                      {template.parameters.length > 0 && (
+                      {template.parameters?.length > 0 && (
                         <div>
                           <h4 className="font-medium mb-2">Parameters</h4>
                           <div className="space-y-2">
