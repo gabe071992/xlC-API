@@ -82,6 +82,14 @@ export default function TemplateBuilder() {
     }]);
   };
 
+  useEffect(() => {
+    const features = form.watch('features');
+    if (features) {
+      const generatedSource = generateTokenSource(features);
+      form.setValue('source', generatedSource);
+    }
+  }, [form.watch('features')]);
+
   return (
     <Card>
       <CardHeader>
@@ -152,6 +160,92 @@ export default function TemplateBuilder() {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4 mb-6">
+              <h3 className="text-lg font-medium">Token Features</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="features.burnable"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Burnable</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Token holders can burn their tokens
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="features.mintable"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Mintable</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Owner can mint new tokens
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="features.pausable"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Pausable</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Owner can pause token transfers
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="features.reflective"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Reflective</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Redistribute tokens on each transfer
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <FormField
               control={form.control}
