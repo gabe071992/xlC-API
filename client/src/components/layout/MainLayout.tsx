@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useAuth } from "@/hooks/auth"; // Assuming this hook exists and provides user authentication status
+import { useAuth } from "@/lib/contexts/auth";
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
