@@ -24,6 +24,14 @@ export interface ContractParameter {
   };
 }
 
+export interface TokenFeatures {
+  burnable: boolean;
+  mintable: boolean;
+  pausable: boolean;
+  reflective: boolean;
+  taxable: boolean;
+}
+
 export interface ContractTemplate {
   id: string;
   name: string;
@@ -31,6 +39,7 @@ export interface ContractTemplate {
   category: 'token' | 'nft' | 'defi';
   version: string;
   parameters: ContractParameter[];
+  features?: TokenFeatures;
   abi: any[];
   bytecode: string;
   source: string;

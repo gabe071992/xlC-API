@@ -20,6 +20,13 @@ const templateSchema = z.object({
   source: z.string().min(1, "Source code is required"),
   abi: z.array(z.any()).optional(),
   bytecode: z.string().optional(),
+  features: z.object({
+    burnable: z.boolean().default(false),
+    mintable: z.boolean().default(false),
+    pausable: z.boolean().default(false),
+    reflective: z.boolean().default(false),
+    taxable: z.boolean().default(false)
+  }).optional(),
   parameters: z.array(z.object({
     name: z.string(),
     type: z.string(),
