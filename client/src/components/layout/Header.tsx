@@ -13,7 +13,7 @@ export function Header() {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <h1 className="text-xl font-bold">xlC API v1 "Flatter"</h1>
+        <img src="https://ConnectP2P.b-cdn.net/App%20Files/B%20(100%20x%20100%20px.gif" alt="xlC Logo" className="h-10" />
         <div className="flex items-center gap-4">
           {user && (
             <Button 
