@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import ContractDashboard from "./components/ContractDashboard";
 
 const tokenFormSchema = z.object({
   name: z.string().min(1, "Token name required"),
@@ -66,9 +68,6 @@ const tokenFormSchema = z.object({
     swapThreshold: z.string().optional()
   })
 });
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import ContractDashboard from "./components/ContractDashboard"
 
 export default function ContractDeploy() {
   const form = useForm({
@@ -153,219 +152,77 @@ export default function ContractDeploy() {
         </TabsContent>
 
         <TabsContent value="deploy">
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Token Configuration</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="contractType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contract Type</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select contract type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="standard">Standard Token</SelectItem>
-                            <SelectItem value="burn">Burn Token</SelectItem>
-                            <SelectItem value="dividend">Dividend Token</SelectItem>
-                            <SelectItem value="fee">Fee Token</SelectItem>
-                            <SelectItem value="custom">Custom Token</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="symbol"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token Symbol</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="decimals"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Decimals</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="totalSupply"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Total Supply</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="baseURI"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Base URI</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="ipfs://..." />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Token Features</h3>
-                  <div className="grid gap-4 md:grid-cols-3">
-                    {Object.entries(form.watch("features")).map(([key, value]) => (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Token Configuration</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-2">
                       <FormField
-                        key={key}
                         control={form.control}
-                        name={`features.${key}` as any}
-                        render={({ field }) => (
-                          <FormItem className="flex items-center space-x-2">
-                            <FormControl>
-                              <Switch 
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormLabel className="capitalize">{key}</FormLabel>
-                          </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Fee Configuration</h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {Object.entries(form.watch("fees")).map(([key]) => (
-                      <FormField
-                        key={key}
-                        control={form.control}
-                        name={`fees.${key}` as any}
+                        name="contractType"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Security Settings</h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="security.antiSnipe"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Switch 
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel>Anti-Snipe Protection</FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    {Object.entries(form.watch("security"))
-                      .filter(([key]) => key !== "antiSnipe")
-                      .map(([key]) => (
-                        <FormField
-                          key={key}
-                          control={form.control}
-                          name={`security.${key}` as any}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+                            <FormLabel>Contract Type</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
                               <FormControl>
-                                <Input type="number" {...field} />
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select contract type" />
+                                </SelectTrigger>
                               </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                    ))}
-                  </div>
-                </div>
+                              <SelectContent>
+                                <SelectItem value="standard">Standard Token</SelectItem>
+                                <SelectItem value="burn">Burn Token</SelectItem>
+                                <SelectItem value="dividend">Dividend Token</SelectItem>
+                                <SelectItem value="fee">Fee Token</SelectItem>
+                                <SelectItem value="custom">Custom Token</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Distribution Configuration</h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {Object.entries(form.watch("distribution")).map(([key]) => (
                       <FormField
-                        key={key}
                         control={form.control}
-                        name={`distribution.${key}` as any}
+                        name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="capitalize">{key} Allocation (%)</FormLabel>
+                            <FormLabel>Token Name</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="symbol"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Token Symbol</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="decimals"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Decimals</FormLabel>
                             <FormControl>
                               <Input type="number" {...field} />
                             </FormControl>
@@ -373,26 +230,77 @@ export default function ContractDeploy() {
                           </FormItem>
                         )}
                       />
-                    ))}
-                  </div>
-                </div>
 
-                {form.watch("contractType") === "custom" && (
-                  <>
+                      <FormField
+                        control={form.control}
+                        name="totalSupply"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Total Supply</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="baseURI"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Base URI</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="ipfs://..." />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <Separator />
+
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Advanced Configuration</h3>
-                      <div className="grid gap-4 md:grid-cols-2">
-                        {Object.entries(form.watch("advanced")).map(([key]) => (
+                      <h3 className="text-lg font-medium">Token Features</h3>
+                      <div className="grid gap-4 md:grid-cols-3">
+                        {Object.entries(form.watch("features")).map(([key, value]) => (
                           <FormField
                             key={key}
                             control={form.control}
-                            name={`advanced.${key}` as any}
+                            name={`features.${key}` as any}
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2">
+                                <FormControl>
+                                  <Switch 
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                                <FormLabel className="capitalize">{key}</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Fee Configuration</h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {Object.entries(form.watch("fees")).map(([key]) => (
+                          <FormField
+                            key={key}
+                            control={form.control}
+                            name={`fees.${key}` as any}
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
                                 <FormControl>
-                                  <Input {...field} />
+                                  <Input type="number" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -401,17 +309,107 @@ export default function ContractDeploy() {
                         ))}
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
-              <div className="mt-6">
-                <Button type="submit">Deploy Token</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </form>
-      </Form>
-    </TabsContent>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Security Settings</h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name="security.antiSnipe"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center space-x-2">
+                              <FormControl>
+                                <Switch 
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <FormLabel>Anti-Snipe Protection</FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                        {Object.entries(form.watch("security"))
+                          .filter(([key]) => key !== "antiSnipe")
+                          .map(([key]) => (
+                            <FormField
+                              key={key}
+                              control={form.control}
+                              name={`security.${key}` as any}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+                                  <FormControl>
+                                    <Input type="number" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                        ))}
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Distribution Configuration</h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {Object.entries(form.watch("distribution")).map(([key]) => (
+                          <FormField
+                            key={key}
+                            control={form.control}
+                            name={`distribution.${key}` as any}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="capitalize">{key} Allocation (%)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {form.watch("contractType") === "custom" && (
+                      <>
+                        <Separator />
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-medium">Advanced Configuration</h3>
+                          <div className="grid gap-4 md:grid-cols-2">
+                            {Object.entries(form.watch("advanced")).map(([key]) => (
+                              <FormField
+                                key={key}
+                                control={form.control}
+                                name={`advanced.${key}` as any}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="mt-6">
+                    <Button type="submit">Deploy Token</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </form>
+          </Form>
+        </TabsContent>
 
         <TabsContent value="security">
           <Card>
