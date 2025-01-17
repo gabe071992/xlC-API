@@ -1,4 +1,3 @@
-
 import { ethers } from 'ethers';
 import { DeploymentStatus } from './types';
 
@@ -21,7 +20,11 @@ export class ContractFactory {
   ): Promise<string> {
     try {
       updateStatus(DeploymentStatus.DEPLOYING);
-      
+
+      if (!this.signer) {
+        throw new Error("Signer not available");
+      }
+
       const factory = new ethers.ContractFactory(
         BEP20_ABI,
         BEP20_BYTECODE,
@@ -37,9 +40,9 @@ export class ContractFactory {
       );
 
       updateStatus(DeploymentStatus.DEPLOYING, { txHash: contract.deployTransaction.hash });
-      
+
       await contract.deployed();
-      
+
       updateStatus(DeploymentStatus.SUCCESS, { 
         contractAddress: contract.address,
         txHash: contract.deployTransaction.hash 

@@ -158,7 +158,7 @@ export default function ContractDeploy() {
   });
 
   const { deploymentState, deploy } = useContractDeployment();
-  const { provider: web3Provider, isConnected } = useWeb3();
+  const { provider: web3Provider, isConnected, signer } = useWeb3();
   const [deploymentError, setDeploymentError] = useState<string | null>(null);
 
   const onSubmit = async (data: z.infer<typeof tokenFormSchema>) => {
@@ -168,11 +168,9 @@ export default function ContractDeploy() {
 
       console.log("Wallet state:", { isConnected, web3Provider: !!web3Provider });
       
-      if (!isConnected || !web3Provider) {
+      if (!isConnected || !web3Provider || !signer) {
         throw new Error("Please connect your wallet");
       }
-
-      const signer = await web3Provider.getSigner();
 
       const address = await signer.getAddress();
       const factory = new ContractFactory(web3Provider, signer);
