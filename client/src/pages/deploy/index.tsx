@@ -166,6 +166,8 @@ export default function ContractDeploy() {
       setDeploymentError(null);
       setIsSubmitting(true);
 
+      console.log("Wallet state:", { isConnected, web3Provider: !!web3Provider });
+      
       if (!isConnected || !web3Provider) {
         throw new Error("Please connect your wallet");
       }
