@@ -158,7 +158,7 @@ export default function ContractDeploy() {
   });
 
   const { deploymentState, deploy } = useContractDeployment();
-  const { provider: web3Provider } = useWeb3();
+  const { provider: web3Provider, isConnected } = useWeb3();
   const [deploymentError, setDeploymentError] = useState<string | null>(null);
 
   const onSubmit = async (data: z.infer<typeof tokenFormSchema>) => {
