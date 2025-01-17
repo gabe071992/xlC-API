@@ -90,16 +90,19 @@ export default function TemplateBuilder() {
     
     if (category === 'token') {
       const tokenFeatures = {
-        burnable: features?.burnable || false,
-        mintable: features?.mintable || false,
-        pausable: features?.pausable || false,
-        reflective: features?.reflective || false,
-        taxable: features?.taxable || false
+        burnable: features?.burnable ?? false,
+        mintable: features?.mintable ?? false,
+        pausable: features?.pausable ?? false,
+        reflective: features?.reflective ?? false,
+        taxable: features?.taxable ?? false
       };
       const generatedSource = generateTokenSource(tokenFeatures);
-      form.setValue('source', generatedSource);
+      form.setValue('source', generatedSource, { 
+        shouldDirty: true,
+        shouldTouch: true 
+      });
     }
-  }, [form.watch('features'), form.watch('category')]);
+  }, [form, form.watch('features'), form.watch('category')]);
 
   return (
     <Card>
