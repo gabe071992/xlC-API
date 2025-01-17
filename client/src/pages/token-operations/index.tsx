@@ -1,12 +1,13 @@
 
 import { useState } from "react";
-import { ref, get, set } from "firebase/database";
+import { ref, get, set, push } from "firebase/database";
 import { database } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -18,6 +19,16 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { v4 as uuidv4 } from 'uuid';
+
+interface Metric {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  minValue: number;
+  maxValue: number;
+}
 
 const priceFormSchema = z.object({
   price: z.string().min(1, "Price is required"),
@@ -32,30 +43,70 @@ const rateFormSchema = z.object({
   baselineRate: z.string().min(1, "Baseline rate is required"),
 });
 
+const metricFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  category: z.string().min(1, "Category is required"),
+  minValue: z.string().min(1, "Minimum value is required"),
+  maxValue: z.string().min(1, "Maximum value is required"),
+});
+
+const weightFormSchema = z.object({
+  metricId: z.string().min(1, "Metric is required"),
+  value: z.string().min(1, "Weight value is required"),
+});
+
 export default function TokenOperations() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [metrics, setMetrics] = useState<Metric[]>([]);
 
   const priceForm = useForm({
     resolver: zodResolver(priceFormSchema),
-    defaultValues: {
-      price: "",
-    },
+    defaultValues: { price: "" },
   });
 
   const transferForm = useForm({
     resolver: zodResolver(transferFormSchema),
-    defaultValues: {
-      to: "",
-      amount: "",
-    },
+    defaultValues: { to: "", amount: "" },
   });
 
   const rateForm = useForm({
     resolver: zodResolver(rateFormSchema),
+    defaultValues: { baselineRate: "" },
+  });
+
+  const metricForm = useForm({
+    resolver: zodResolver(metricFormSchema),
     defaultValues: {
-      baselineRate: "",
+      name: "",
+      description: "",
+      category: "",
+      minValue: "",
+      maxValue: "",
     },
   });
+
+  const weightForm = useForm({
+    resolver: zodResolver(weightFormSchema),
+    defaultValues: {
+      metricId: "",
+      value: "",
+    },
+  });
+
+  // Fetch metrics on component mount
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      const metricsRef = ref(database, 'ratesAndWeights/metrics');
+      const snapshot = await get(metricsRef);
+      if (snapshot.exists()) {
+        const metricsData = snapshot.val();
+        const metricsArray = Object.values(metricsData) as Metric[];
+        setMetrics(metricsArray);
+      }
+    };
+    fetchMetrics();
+  }, []);
 
   const handlePriceSubmit = async (values: z.infer<typeof priceFormSchema>) => {
     try {
@@ -88,6 +139,46 @@ export default function TokenOperations() {
       rateForm.reset();
     } catch (error) {
       console.error('Error updating baseline rate:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleMetricSubmit = async (values: z.infer<typeof metricFormSchema>) => {
+    try {
+      setIsSubmitting(true);
+      const metricId = uuidv4();
+      const metricData = {
+        id: metricId,
+        name: values.name,
+        description: values.description,
+        category: values.category,
+        minValue: Number(values.minValue),
+        maxValue: Number(values.maxValue),
+      };
+      await set(ref(database, `ratesAndWeights/metrics/${metricId}`), metricData);
+      metricForm.reset();
+      // Refresh metrics list
+      setMetrics([...metrics, metricData]);
+    } catch (error) {
+      console.error('Error adding metric:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleWeightSubmit = async (values: z.infer<typeof weightFormSchema>) => {
+    try {
+      setIsSubmitting(true);
+      const weightId = uuidv4();
+      await set(ref(database, `ratesAndWeights/weights/${weightId}`), {
+        id: weightId,
+        metricId: values.metricId,
+        value: Number(values.value),
+      });
+      weightForm.reset();
+    } catch (error) {
+      console.error('Error adding weight:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -177,33 +268,167 @@ export default function TokenOperations() {
         </TabsContent>
 
         <TabsContent value="rates">
-          <Card>
-            <CardHeader>
-              <CardTitle>Baseline Rate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Form {...rateForm}>
-                <form onSubmit={rateForm.handleSubmit(handleRateSubmit)} className="space-y-4">
-                  <FormField
-                    control={rateForm.control}
-                    name="baselineRate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Baseline Rate</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.01" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Updating..." : "Update Rate"}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Baseline Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...rateForm}>
+                  <form onSubmit={rateForm.handleSubmit(handleRateSubmit)} className="space-y-4">
+                    <FormField
+                      control={rateForm.control}
+                      name="baselineRate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Baseline Rate</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Updating..." : "Update Rate"}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Add Metric</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...metricForm}>
+                  <form onSubmit={metricForm.handleSubmit(handleMetricSubmit)} className="space-y-4">
+                    <FormField
+                      control={metricForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={metricForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={metricForm.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={metricForm.control}
+                      name="minValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Minimum Value</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={metricForm.control}
+                      name="maxValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Maximum Value</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Adding..." : "Add Metric"}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Add Weight</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...weightForm}>
+                  <form onSubmit={weightForm.handleSubmit(handleWeightSubmit)} className="space-y-4">
+                    <FormField
+                      control={weightForm.control}
+                      name="metricId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Metric</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a metric" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {metrics.map((metric) => (
+                                <SelectItem key={metric.id} value={metric.id}>
+                                  {metric.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={weightForm.control}
+                      name="value"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Weight Value</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Adding..." : "Add Weight"}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
