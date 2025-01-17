@@ -153,12 +153,39 @@ export default function ContractDeploy() {
     }
   });
 
+  const { deploymentState, deploy } = useContractDeployment();
+  const [deploymentError, setDeploymentError] = useState<string | null>(null);
+
   const onSubmit = async (data: z.infer<typeof tokenFormSchema>) => {
     try {
-      console.log("Deploying token:", data);
-      // API call to deploy token will go here
+      setDeploymentError(null);
+      setIsSubmitting(true);
+
+      const totalSupplyWithDecimals = ethers.utils.parseUnits(
+        data.totalSupply,
+        Number(data.decimals)
+      );
+
+      const signer = await web3Provider?.getSigner();
+      if (!signer) {
+        throw new Error("Please connect your wallet");
+      }
+
+      const address = await signer.getAddress();
+      
+      await deploy(
+        data.name,
+        data.symbol,
+        Number(data.decimals),
+        totalSupplyWithDecimals.toString(),
+        address
+      );
+
     } catch (error) {
       console.error("Error deploying token:", error);
+      setDeploymentError(error instanceof Error ? error.message : "Failed to deploy token");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -448,8 +475,40 @@ export default function ContractDeploy() {
                       </>
                     )}
                   </div>
-                  <div className="mt-6">
-                    <Button type="submit">Deploy Token</Button>
+                  <div className="mt-6 space-y-4">
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Deploying..." : "Deploy Token"}
+                    </Button>
+                    
+                    {deploymentState.status !== "PENDING" && (
+                      <div className="text-sm">
+                        {deploymentState.status === "DEPLOYING" && (
+                          <p className="text-yellow-500">Deploying contract...</p>
+                        )}
+                        {deploymentState.status === "SUCCESS" && (
+                          <p className="text-green-500">
+                            Contract deployed at: {deploymentState.contractAddress}
+                          </p>
+                        )}
+                        {deploymentState.status === "FAILED" && (
+                          <p className="text-red-500">
+                            {deploymentState.error || "Deployment failed"}
+                          </p>
+                        )}
+                        {deploymentState.status === "VERIFYING" && (
+                          <p className="text-yellow-500">Verifying contract...</p>
+                        )}
+                        {deploymentState.status === "VERIFIED" && (
+                          <p className="text-green-500">Contract verified!</p>
+                        )}
+                      </div>
+                    )}
+                    
+                    {deploymentError && (
+                      <div className="text-red-500 text-sm">
+                        {deploymentError}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
