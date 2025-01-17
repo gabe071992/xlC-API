@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useContractDeployment } from "@/lib/hooks/useContractDeployment";
+import { ContractFactory } from "@/lib/contracts/ContractFactory";
+import { ethers } from "ethers";
 import type { ContractTemplate } from "@/lib/contracts/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -161,6 +163,14 @@ export default function ContractDeploy() {
     try {
       setDeploymentError(null);
       setIsSubmitting(true);
+      
+      const signer = await web3Provider?.getSigner();
+      if (!signer) {
+        throw new Error("Please connect your wallet");
+      }
+
+      const address = await signer.getAddress();
+      const factory = new ContractFactory(web3Provider, signer);
       
       // Get gas estimate before deployment
       const gasEstimate = await factory.estimateGas(
