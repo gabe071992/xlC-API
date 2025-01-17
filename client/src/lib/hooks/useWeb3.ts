@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { 
   useAccount, 
   useConnect, 
-  useDisconnect, 
+  useDisconnect,
   useNetwork,
   usePublicClient,
   useWalletClient
-} from 'wagmi/react';
+} from 'wagmi';
 
 export function useWeb3() {
   const { address, isConnected } = useAccount();
