@@ -4,12 +4,12 @@ import { database } from "../firebase";
 import { ContractTemplate } from "./types";
 
 export const saveTemplate = async (template: ContractTemplate) => {
-  const templateRef = ref(database, `xlc/deployments/contracts/${template.category}/${template.id}`);
+  const templateRef = ref(database, `xlc/deployments/${template.category}/${template.id}`);
   await set(templateRef, template);
 };
 
 export const getTemplates = async (): Promise<ContractTemplate[]> => {
-  const templatesRef = ref(database, 'xlc/deployments/contracts');
+  const templatesRef = ref(database, 'xlc/deployments');
   const snapshot = await get(templatesRef);
   if (!snapshot.exists()) return [];
   
@@ -26,14 +26,14 @@ export const getTemplates = async (): Promise<ContractTemplate[]> => {
 };
 
 export const getTemplateById = async (id: string, category: string): Promise<ContractTemplate | null> => {
-  const templateRef = ref(database, `xlc/deployments/contracts/${category}/${id}`);
+  const templateRef = ref(database, `xlc/deployments/${category}/${id}`);
   const snapshot = await get(templateRef);
   if (!snapshot.exists()) return null;
   return snapshot.val();
 };
 
 export const getTemplatesByCategory = async (category: string): Promise<ContractTemplate[]> => {
-  const templatesRef = ref(database, `xlc/deployments/contracts/${category}`);
+  const templatesRef = ref(database, `xlc/deployments/${category}`);
   const templatesQuery = query(templatesRef, orderByChild('category'));
   const snapshot = await get(templatesQuery);
   if (!snapshot.exists()) return [];
