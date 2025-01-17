@@ -2,6 +2,10 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ref, set } from "firebase/database"
+import { database } from "@/lib/firebase"
+import { v4 as uuidv4 } from "uuid"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -68,18 +72,35 @@ export default function Distribution() {
     }
   })
 
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+
   async function handleOfferSubmit(data) {
     try {
+      setError("")
+      setSuccess("")
       setIsSubmittingOffer(true)
-      const response = await fetch('/api/offers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+      
+      // Validate dates
+      const startDate = new Date(data.startDate)
+      const endDate = new Date(data.endDate)
+      if (endDate <= startDate) {
+        throw new Error("End date must be after start date")
+      }
+
+      const offerRef = ref(database, 'offers/' + uuidv4())
+      await set(offerRef, {
+        ...data,
+        rewardAmount: String(data.rewardAmount),
+        duration: String(data.duration),
+        maxParticipants: String(data.maxParticipants)
       })
-      if (!response.ok) throw new Error('Failed to create offer')
+
+      setSuccess("Offer created successfully")
       offerForm.reset()
     } catch (error) {
       console.error('Error creating offer:', error)
+      setError(error.message || "Failed to create offer")
     } finally {
       setIsSubmittingOffer(false)
     }
@@ -87,16 +108,32 @@ export default function Distribution() {
 
   async function handlePoolSubmit(data) {
     try {
+      setError("")
+      setSuccess("")
       setIsSubmittingPool(true)
-      const response = await fetch('/api/stakingPools', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+      
+      // Validate dates
+      const startDate = new Date(data.startDate)
+      const endDate = new Date(data.endDate)
+      if (endDate <= startDate) {
+        throw new Error("End date must be after start date")
+      }
+
+      const poolRef = ref(database, 'stakingPools/' + uuidv4())
+      await set(poolRef, {
+        ...data,
+        id: uuidv4(),
+        totalStaked: 0,
+        apy: Number(data.apy),
+        minStakeAmount: Number(data.minStakeAmount),
+        lockPeriod: Number(data.lockPeriod)
       })
-      if (!response.ok) throw new Error('Failed to create staking pool')
+
+      setSuccess("Staking pool created successfully")
       stakingForm.reset()
     } catch (error) {
       console.error('Error creating staking pool:', error)
+      setError(error.message || "Failed to create staking pool")
     } finally {
       setIsSubmittingPool(false)
     }
@@ -155,8 +192,127 @@ export default function Distribution() {
                     )}
                   />
 
-                  {/* Remaining offer form fields following same pattern */}
-                  
+                  <FormField
+                    control={offerForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={offerForm.control}
+                    name="rewardAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reward Amount (XLC)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={offerForm.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Duration (days)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={offerForm.control}
+                    name="maxParticipants"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Max Participants</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={offerForm.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={offerForm.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>End Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={offerForm.control}
+                    name="active"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center space-x-2">
+                          <FormControl>
+                            <Switch 
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormLabel>Active</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={offerForm.control}
+                    name="requirements"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Requirements (comma-separated)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            value={field.value.join(',')} 
+                            onChange={(e) => field.onChange(e.target.value.split(','))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <Button type="submit" disabled={isSubmittingOffer}>
                     {isSubmittingOffer ? "Creating..." : "Create Offer"}
                   </Button>
@@ -185,7 +341,94 @@ export default function Distribution() {
                     )}
                   />
 
-                  {/* Remaining staking pool form fields following same pattern */}
+                  <FormField
+                    control={stakingForm.control}
+                    name="apy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>APY (%)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={stakingForm.control}
+                    name="minStakeAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Minimum Stake Amount (XLC)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={stakingForm.control}
+                    name="lockPeriod"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lock Period (days)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={stakingForm.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={stakingForm.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>End Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={stakingForm.control}
+                    name="active"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center space-x-2">
+                          <FormControl>
+                            <Switch 
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormLabel>Active</FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <Button type="submit" disabled={isSubmittingPool}>
                     {isSubmittingPool ? "Creating..." : "Create Pool"}
