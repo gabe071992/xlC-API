@@ -11,6 +11,7 @@ import * as z from "zod";
 import { Switch } from "@/components/ui/switch";
 import type { ContractTemplate } from "@/lib/contracts/types";
 import { saveTemplate } from "@/lib/contracts/templates";
+import { generateTokenSource } from "@/lib/contracts/templateHelpers";
 import ContractPreview from "./ContractPreview"; // Imported ContractPreview component
 
 const templateSchema = z.object({
