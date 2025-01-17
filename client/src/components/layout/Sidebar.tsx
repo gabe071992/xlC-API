@@ -19,7 +19,7 @@ export function Sidebar({ className }: SidebarProps) {
     { 
       label: "Dashboard",
       icon: LayoutDashboard,
-      href: "/client/src/pages/dashboard/index.tsx",
+      href: "/",
     },
     {
       label: "Token Operations",
@@ -29,7 +29,7 @@ export function Sidebar({ className }: SidebarProps) {
     {
       label: "User Management",
       icon: Users,
-      href: "/client/src/pages/users/index.tsx",
+      href: "/users",
     },
     {
       label: "API Management",

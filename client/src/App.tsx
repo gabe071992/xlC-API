@@ -13,6 +13,36 @@ import { MainLayout } from "@/components/layout/MainLayout"; // Added import for
 function Router() {
   return (
     <Switch>
+      <Route path="/users">
+        {() => {
+          const { user, loading } = useAuth();
+          const Users = lazy(() => import("@/pages/users"));
+
+          if (loading) return <div>Loading...</div>;
+          if (!user) return <div>Please log in</div>;
+
+          return (
+            <React.Suspense fallback={<div>Loading...</div>}>
+              <Users />
+            </React.Suspense>
+          );
+        }}
+      </Route>
+      <Route path="/token-operations">
+        {() => {
+          const { user, loading } = useAuth();
+          const TokenOperations = lazy(() => import("@/pages/token-operations"));
+
+          if (loading) return <div>Loading...</div>;
+          if (!user) return <div>Please log in</div>;
+
+          return (
+            <React.Suspense fallback={<div>Loading...</div>}>
+              <TokenOperations />
+            </React.Suspense>
+          );
+        }}
+      </Route>
       <Route path="/">
         {() => {
           const { user, loading } = useAuth();
