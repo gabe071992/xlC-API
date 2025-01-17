@@ -1,4 +1,3 @@
-
 import { ErrorBoundary } from "react-error-boundary"
 import { Header } from "./Header"
 import { Sidebar } from "./Sidebar"
@@ -6,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useAuth } from "@/hooks/auth"; // Assuming this hook exists and provides user authentication status
 
 function ErrorFallback({ error }: { error: Error }) {
   return (
@@ -19,10 +19,11 @@ function ErrorFallback({ error }: { error: Error }) {
 }
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth(); // Get authentication status
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="flex min-h-screen flex-col">
-        <Header />
+        <Header user={user} /> {/* Pass user status to Header */}
         <div className="flex-1 flex">
           <Sheet>
             <SheetTrigger asChild>
