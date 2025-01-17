@@ -1,10 +1,12 @@
+
 import { useState, useCallback } from 'react';
 import { ContractFactory } from '../contracts/ContractFactory';
 import { DeploymentStatus, DeploymentState } from '../contracts/types';
 import { useWeb3 } from './useWeb3';
+import { PublicClient, WalletClient } from 'wagmi';
 
 export function useContractDeployment() {
-  const { provider, signer } = useWeb3();
+  const { provider: publicClient, signer: walletClient } = useWeb3();
   const [deploymentState, setDeploymentState] = useState<DeploymentState>({
     status: DeploymentStatus.PENDING
   });
@@ -24,13 +26,12 @@ export function useContractDeployment() {
     totalSupply: string,
     owner: string
   ) => {
-    if (!provider || !signer) {
+    if (!publicClient || !walletClient) {
       throw new Error('Web3 not initialized');
     }
 
     try {
-      const factory = new ContractFactory(provider, signer);
-
+      const factory = new ContractFactory(publicClient, walletClient);
       const contractAddress = await factory.deployToken(
         name,
         symbol,

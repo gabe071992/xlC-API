@@ -1,21 +1,21 @@
 
 import { useEffect, useState } from 'react';
-import { useAccount, useConnect, useDisconnect, useConfig, useWalletClient, usePublicClient } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useConfig, useWalletClient, usePublicClient, Chain } from 'wagmi';
 
 export function useWeb3() {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const config = useConfig();
-  const { data: signer } = useWalletClient();
-  const provider = usePublicClient();
-  const [chain, setChain] = useState(config.chains[0]);
+  const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient();
+  const [chain, setChain] = useState<Chain>(config.chains[0]);
 
   useEffect(() => {
-    if (signer?.chain) {
-      setChain(signer.chain);
+    if (walletClient?.chain) {
+      setChain(walletClient.chain);
     }
-  }, [signer]);
+  }, [walletClient]);
 
   return {
     address,
@@ -23,8 +23,8 @@ export function useWeb3() {
     connect,
     disconnect,
     chain,
-    provider,
-    signer,
+    provider: publicClient,
+    signer: walletClient,
     connectors
   };
 }

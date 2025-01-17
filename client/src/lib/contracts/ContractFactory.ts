@@ -1,11 +1,12 @@
 import { ethers } from 'ethers';
 import { DeploymentStatus } from './types';
+import { PublicClient, WalletClient } from 'wagmi';
 
 export class ContractFactory {
-  private provider: any;
-  private signer: any;
+  private provider: PublicClient;
+  private signer: WalletClient;
 
-  constructor(provider: any, signer: any) {
+  constructor(provider: PublicClient, signer: WalletClient) {
     this.provider = provider;
     this.signer = signer;
   }
@@ -25,13 +26,11 @@ export class ContractFactory {
         throw new Error("Signer not available");
       }
 
-      // Get the address from wagmi wallet client
       const address = this.signer.account?.address;
       if (!address) {
         throw new Error("Could not get wallet address");
       }
 
-      // Create contract instance with wagmi
       const factory = new ethers.ContractFactory(
         BEP20_ABI,
         BEP20_BYTECODE,
@@ -55,24 +54,6 @@ export class ContractFactory {
         txHash: contract.deployTransaction.hash 
       });
 
-      // Initiate verification
-      updateStatus(DeploymentStatus.VERIFYING);
-      const verificationGuid = await verifyContract({
-        contractAddress: contract.address,
-        sourceCode: contract.interface.format('full'),
-        contractName: 'Token',
-        compilerVersion: '0.8.0',
-        optimizationUsed: 1,
-        runs: 200,
-        constructorArguments: contract.interface.encodeDeploy([name, symbol, decimals, totalSupply, owner])
-      });
-
-      // Check verification status
-      const isVerified = await checkVerificationStatus(verificationGuid);
-      if (isVerified) {
-        updateStatus(DeploymentStatus.VERIFIED);
-      }
-
       return contract.address;
     } catch (error) {
       updateStatus(DeploymentStatus.FAILED, { error: error.message });
@@ -94,4 +75,4 @@ export const BEP20_ABI = [
   "function allowance(address owner, address spender) public view returns (uint256)"
 ];
 
-export const BEP20_BYTECODE = "0x608060405234801561001057600080fd5b506040516108..."; // Add your bytecode here
+export const BEP20_BYTECODE = "0x608060405234801561001057600080fd5b506040516108..."; // Your bytecode here
