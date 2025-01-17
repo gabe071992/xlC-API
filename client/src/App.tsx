@@ -1,5 +1,5 @@
 import React, { lazy } from "react";
-import { Switch, Route } from "wouter";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { queryClient } from "./lib/queryClient";
 import { useAuth } from "@/lib/contexts/auth";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -8,141 +8,80 @@ import { AuthProvider } from "@/lib/contexts/auth";
 import { Header } from "@/components/layout/Header";
 import NotFound from "@/pages/not-found";
 import { MainLayout } from "@/components/layout/MainLayout"; // Added import for MainLayout
-
+import { WagmiConfig } from 'wagmi'
+import { config } from './lib/web3'
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/users">
-        {() => {
-          const { user, loading } = useAuth();
-          const Users = lazy(() => import("@/pages/users"));
-
-          if (loading) return <div>Loading...</div>;
-          if (!user) return <div>Please log in</div>;
-
-          return (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <Users />
-            </React.Suspense>
-          );
-        }}
-      </Route>
-      <Route path="/token-operations">
-        {() => {
-          const { user, loading } = useAuth();
-          const TokenOperations = lazy(() => import("@/pages/token-operations"));
-
-          if (loading) return <div>Loading...</div>;
-          if (!user) return <div>Please log in</div>;
-
-          return (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <TokenOperations />
-            </React.Suspense>
-          );
-        }}
-      </Route>
-      <Route path="/">
-        {() => {
-          const { user, loading } = useAuth();
-          const Dashboard = lazy(() => import("@/pages/dashboard"));
-          const Distribution = lazy(() => import("@/pages/distribution"));
-
-          if (loading) {
-            return <div>Loading...</div>;
-          }
-
-          if (!user) {
-            return (
-              <div className="flex min-h-screen items-center justify-center">
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold mb-4">xlC</h1>
-                  <p className="mb-4">Please log in to access the dashboard</p>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <Dashboard />
-            </React.Suspense>
-          );
-        }}
-      </Route>
-      <Route path="/deploy">
-        {() => {
-          const { user, loading } = useAuth();
-          const Deploy = lazy(() => import("@/pages/deploy"));
-
-          if (loading) {
-            return <div>Loading...</div>;
-          }
-
-          if (!user) {
-            return (
-              <div className="flex min-h-screen items-center justify-center">
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold mb-4">xlC</h1>
-                  <p className="mb-4">Please log in to access the dashboard</p>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <Deploy />
-            </React.Suspense>
-          );
-        }}
-      </Route>
-
-      <Route path="/distribution">
-        {() => {
-          const { user, loading } = useAuth();
-          const Distribution = lazy(() => import("@/pages/distribution"));
-
-          if (loading) {
-            return <div>Loading...</div>;
-          }
-
-          if (!user) {
-            return (
-              <div className="flex min-h-screen items-center justify-center">
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold mb-4">xlC</h1>
-                  <p className="mb-4">Please log in to access the dashboard</p>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <Distribution />
-            </React.Suspense>
-          );
-        }}
-      </Route>
-      <Route component={NotFound} />
-    </Switch>
+    <Routes>
+      <Route path="/users" element={
+        <AuthProtectedRoute>
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <LazyUsers/>
+          </React.Suspense>
+        </AuthProtectedRoute>
+      }/>
+      <Route path="/token-operations" element={
+        <AuthProtectedRoute>
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <LazyTokenOperations/>
+          </React.Suspense>
+        </AuthProtectedRoute>
+      }/>
+      <Route path="/" element={
+        <AuthProtectedRoute>
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <LazyDashboard/>
+          </React.Suspense>
+        </AuthProtectedRoute>
+      }/>
+      <Route path="/deploy" element={
+        <AuthProtectedRoute>
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <LazyDeploy/>
+          </React.Suspense>
+        </AuthProtectedRoute>
+      }/>
+      <Route path="/distribution" element={
+        <AuthProtectedRoute>
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <LazyDistribution/>
+          </React.Suspense>
+        </AuthProtectedRoute>
+      }/>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
-import { WagmiConfig } from 'wagmi'
-import { config } from './lib/web3'
+
+const LazyUsers = lazy(() => import("@/pages/users"));
+const LazyTokenOperations = lazy(() => import("@/pages/token-operations"));
+const LazyDashboard = lazy(() => import("@/pages/dashboard"));
+const LazyDeploy = lazy(() => import("@/pages/deploy"));
+const LazyDistribution = lazy(() => import("@/pages/distribution"));
+
+const AuthProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Please log in</div>;
+
+  return children;
+};
+
 
 function App() {
   return (
     <WagmiConfig config={config}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <MainLayout> {/* Using MainLayout here */}
-            <Router />
-          </MainLayout>
-          <Toaster />
+          <BrowserRouter>
+            <MainLayout>
+              <Router />
+            </MainLayout>
+            <Toaster />
+          </BrowserRouter>
         </AuthProvider>
       </QueryClientProvider>
     </WagmiConfig>
@@ -150,4 +89,3 @@ function App() {
 }
 
 export default App;
-
