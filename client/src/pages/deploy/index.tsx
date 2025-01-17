@@ -14,6 +14,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import ContractDashboard from "./components/ContractDashboard";
+import SecurityControls from "./components/SecurityControls";
+import ContractRegistry from "./components/ContractRegistry";
 
 const tokenFormSchema = z.object({
   name: z.string().min(1, "Token name required"),
@@ -145,6 +147,7 @@ export default function ContractDeploy() {
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="deploy">Deploy Contract</TabsTrigger>
           <TabsTrigger value="security">Security Controls</TabsTrigger>
+          <TabsTrigger value="registry">Contract Registry</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard">
@@ -412,16 +415,11 @@ export default function ContractDeploy() {
         </TabsContent>
 
         <TabsContent value="security">
-          <Card>
-            <CardHeader>
-              <CardTitle>Security Controls</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <h3>Coming soon...</h3>
-              </div>
-            </CardContent>
-          </Card>
+          <SecurityControls />
+        </TabsContent>
+
+        <TabsContent value="registry">
+          <ContractRegistry />
         </TabsContent>
       </Tabs>
     </div>
