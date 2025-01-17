@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getTemplates } from "@/lib/contracts/templates";
+import { useContractDeployment } from "@/lib/hooks/useContractDeployment";
 import type { ContractTemplate } from "@/lib/contracts/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -172,7 +172,7 @@ export default function ContractDeploy() {
       }
 
       const address = await signer.getAddress();
-      
+
       await deploy(
         data.name,
         data.symbol,
@@ -479,7 +479,7 @@ export default function ContractDeploy() {
                     <Button type="submit" disabled={isSubmitting}>
                       {isSubmitting ? "Deploying..." : "Deploy Token"}
                     </Button>
-                    
+
                     {deploymentState.status !== "PENDING" && (
                       <div className="text-sm">
                         {deploymentState.status === "DEPLOYING" && (
@@ -503,7 +503,7 @@ export default function ContractDeploy() {
                         )}
                       </div>
                     )}
-                    
+
                     {deploymentError && (
                       <div className="text-red-500 text-sm">
                         {deploymentError}
