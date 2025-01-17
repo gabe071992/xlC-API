@@ -1,3 +1,4 @@
+
 import { ref, set, get, query, orderByChild } from "firebase/database";
 import { database } from "../firebase";
 import { ContractTemplate } from "./types";
@@ -11,9 +12,15 @@ export const getTemplates = async (): Promise<ContractTemplate[]> => {
   const templatesRef = ref(database, 'xlc/deployments/contracts');
   const snapshot = await get(templatesRef);
   if (!snapshot.exists()) return [];
+  
   const templates: ContractTemplate[] = [];
   Object.keys(snapshot.val()).forEach(category => {
-    templates.push(...Object.values(snapshot.val()[category]));
+    const categoryTemplates = snapshot.val()[category];
+    if (categoryTemplates) {
+      Object.values(categoryTemplates).forEach((template: any) => {
+        templates.push(template as ContractTemplate);
+      });
+    }
   });
   return templates;
 };
