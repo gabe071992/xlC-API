@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Switch } from "@/components/ui/switch";
 import type { ContractTemplate } from "@/lib/contracts/types";
 import { saveTemplate } from "@/lib/contracts/templates";
 import ContractPreview from "./ContractPreview"; // Imported ContractPreview component
