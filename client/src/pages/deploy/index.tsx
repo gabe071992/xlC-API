@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getTemplates } from "@/lib/contracts/templates";
+import type { ContractTemplate } from "@/lib/contracts/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -75,6 +77,17 @@ const tokenFormSchema = z.object({
 });
 
 export default function ContractDeploy() {
+  const [templates, setTemplates] = useState<ContractTemplate[]>([]);
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  useEffect(() => {
+    const loadTemplates = async () => {
+      const loadedTemplates = await getTemplates();
+      setTemplates(loadedTemplates);
+    };
+    loadTemplates();
+  }, []);
+
   const form = useForm({
     resolver: zodResolver(tokenFormSchema),
     defaultValues: {
@@ -145,7 +158,7 @@ export default function ContractDeploy() {
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold">Contract Management</h1>
 
-      <Tabs defaultValue="dashboard" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
