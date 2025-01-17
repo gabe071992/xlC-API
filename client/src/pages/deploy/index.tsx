@@ -146,6 +146,7 @@ export default function ContractDeploy() {
         <TabsList>
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger value="builder">Template Builder</TabsTrigger>
           <TabsTrigger value="deploy">Deploy Contract</TabsTrigger>
           <TabsTrigger value="security">Security Controls</TabsTrigger>
           <TabsTrigger value="registry">Contract Registry</TabsTrigger>
