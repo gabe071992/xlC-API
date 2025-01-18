@@ -15,6 +15,7 @@ const LazyTokenOperations = lazy(() => import("@/pages/token-operations"));
 const LazyDashboard = lazy(() => import("@/pages/dashboard"));
 const LazyDeploy = lazy(() => import("@/pages/deploy"));
 const LazyDistribution = lazy(() => import("@/pages/distribution"));
+const LazyAPIManagement = lazy(() => import("@/pages/api-management"));
 
 const AuthProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -60,6 +61,13 @@ function Router() {
         <AuthProtectedRoute>
           <React.Suspense fallback={<div>Loading...</div>}>
             <LazyDistribution/>
+          </React.Suspense>
+        </AuthProtectedRoute>
+      }/>
+      <Route path="/api-management" element={
+        <AuthProtectedRoute>
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <LazyAPIManagement/>
           </React.Suspense>
         </AuthProtectedRoute>
       }/>
