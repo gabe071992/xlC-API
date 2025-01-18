@@ -64,7 +64,7 @@ function Router() {
           </React.Suspense>
         </AuthProtectedRoute>
       }/>
-      <Route path="/api-management" element={
+      <Route path="/flatter-management" element={
         <React.Suspense fallback={<div>Loading...</div>}>
           <LazyAPIManagement/>
         </React.Suspense>
