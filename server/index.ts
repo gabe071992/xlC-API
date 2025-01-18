@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import cors from 'cors';
+import path from 'path'; //Import path module
 
 const app = express();
 
@@ -56,7 +57,11 @@ app.use((req, res, next) => {
 
 (async () => {
   // Register API routes first
-  const server = registerRoutes(app);
+  const routes = registerRoutes(app); // Assuming registerRoutes returns the routes object
+
+
+  // Only handle /api/v1 routes
+  app.use('/api/v1', routes);
 
   // Global error handler for API routes
   app.use('/api', (err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -72,22 +77,21 @@ app.use((req, res, next) => {
     });
   });
 
+  // All other routes should be handled by the frontend
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
+
+
   // Setup Vite after API routes
   if (app.get("env") === "development") {
-    // Only handle non-API routes with Vite
-    app.use((req, res, next) => {
-      if (!req.path.startsWith('/api')) {
-        return next();
-      }
-      res.status(404).json({ error: 'API endpoint not found', code: 'API_404' });
-    });
-    await setupVite(app, server);
+    await setupVite(app); //Removed server argument as it's not needed here.  Assumes setupVite handles non-API routes.
   } else {
     serveStatic(app);
   }
 
   const PORT = 3000;
-  server.listen(PORT, "0.0.0.0", () => {
+  app.listen(PORT, "0.0.0.0", () => {
     log(`Server running on port ${PORT}`);
   });
 })();
