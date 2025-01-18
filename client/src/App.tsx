@@ -65,11 +65,9 @@ function Router() {
         </AuthProtectedRoute>
       }/>
       <Route path="/api-management" element={
-        <AuthProtectedRoute>
-          <React.Suspense fallback={<div>Loading...</div>}>
-            <LazyAPIManagement/>
-          </React.Suspense>
-        </AuthProtectedRoute>
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <LazyAPIManagement/>
+        </React.Suspense>
       }/>
       <Route path="*" element={<div>Not Found</div>} />
     </Routes>
