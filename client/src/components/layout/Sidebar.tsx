@@ -32,9 +32,9 @@ export function Sidebar({ className }: SidebarProps) {
       href: "/users",
     },
     {
-      label: "API Management",
+      label: "Flatter Management",
       icon: Settings,
-      href: "/api-management",
+      href: "/flatter-management",
     },
     {
       label: "Distribution",
