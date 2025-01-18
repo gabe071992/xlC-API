@@ -61,12 +61,10 @@ const EndpointCard = ({ endpoint }: { endpoint: any }) => {
 
 export default function APIManagement() {
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">API Management</h1>
-      </div>
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">API Management</h1>
       
-      <Tabs defaultValue="auth" className="space-y-4">
+      <Tabs defaultValue="auth">
         <TabsList>
           <TabsTrigger value="auth">Authentication</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
