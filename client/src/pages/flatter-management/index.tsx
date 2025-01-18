@@ -1,4 +1,68 @@
 
+import React, { useState } from 'react';
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import axios from 'axios';
+
+interface TestResult {
+  status: 'success' | 'partial' | 'error';
+  message: string;
+}
+
+const TestButton = ({ endpoint }: { endpoint: any }) => {
+  const [testStatus, setTestStatus] = useState<TestResult | null>(null);
+  
+  const runTest = async () => {
+    try {
+      const response = await axios({
+        method: endpoint.method,
+        url: `/api${endpoint.path}`,
+        data: endpoint.testData || {},
+      });
+      
+      setTestStatus({
+        status: response.status === 200 ? 'success' : 'partial',
+        message: response.status === 200 ? 'Test passed' : 'Partial success'
+      });
+    } catch (error) {
+      setTestStatus({
+        status: 'error',
+        message: 'Test failed'
+      });
+    }
+  };
+
+  const getStatusColor = () => {
+    if (!testStatus) return 'bg-gray-500';
+    return {
+      success: 'bg-green-500',
+      partial: 'bg-yellow-500',
+      error: 'bg-red-500'
+    }[testStatus.status];
+  };
+
+  return (
+    <div className="flex items-center gap-2 mt-2">
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={runTest}
+      >
+        Test Endpoint
+      </Button>
+      {testStatus && (
+        <div className="flex items-center gap-2">
+          <div className={`w-3 h-3 rounded-full ${getStatusColor()}`} />
+          <span className="text-sm">{testStatus.message}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +119,7 @@ const EndpointCard = ({ endpoint }: { endpoint: any }) => {
         <StatusBadge status={endpoint.status} />
       </div>
       <p className="text-sm text-gray-500">{endpoint.description}</p>
+      {endpoint.status === 'implemented' && <TestButton endpoint={endpoint} />}
     </Card>
   );
 };
